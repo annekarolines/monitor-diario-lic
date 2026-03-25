@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'">
+  <title>licitações de comunicação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <span class="header-mark"></span>
+        <div>
+          <h1 class="header-title">licitações de comunicação</h1>
+          <p class="header-sub">oportunidades públicas em comunicação e marketing</p>
+        </div>
+      </div>
+      <div class="header-meta" id="lastUpdated">—</div>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <div class="controls-inner">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="Buscar licitações..."
+          autocomplete="off"
+        >
+      </div>
+
+      <!-- Filtros de categoria -->
+      <div class="filters" id="filterBar">
+        <button class="filter-pill active" data-cat="all">Todas</button>
+        <button class="filter-pill" data-cat="Publicidade & Propaganda">Publicidade</button>
+        <button class="filter-pill" data-cat="Marketing Digital">Marketing Digital</button>
+        <button class="filter-pill" data-cat="Conteúdo & Redes Sociais">Conteúdo</button>
+        <button class="filter-pill" data-cat="Identidade Visual & Criação">Identidade Visual</button>
+        <button class="filter-pill" data-cat="Comunicação Institucional">Institucional</button>
+      </div>
+
+      <!-- Filtros de data -->
+      <div class="filters date-filters" id="dateFilterBar">
+        <button class="filter-pill date-pill active" data-days="0">Hoje</button>
+        <button class="filter-pill date-pill" data-days="7">Últimos 7 dias</button>
+        <button class="filter-pill date-pill" data-days="30">Todos (30 dias)</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Main -->
+  <main class="main" id="licitacoesSection">
+
+    <!-- Section title -->
+    <div class="tds-header">
+      <h2 class="tds-title">todas as licitações</h2>
+      <div class="stats-bar" id="statsBar"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <h3>Nenhuma licitação encontrada</h3>
+      <p>As licitações serão carregadas em breve. Volte mais tarde.</p>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="grid" id="licitacoesGrid"></div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" id="paginationBar"></div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Licitações de Comunicação · dados dos últimos 30 dias · <a href="https://pncp.gov.br" target="_blank" rel="noopener">PNCP</a></p>
+  </footer>
+
+  <!-- Card template -->
+  <template id="cardTemplate">
+    <article class="card">
+      <div class="card-top">
+        <span class="card-badge"></span>
+        <span class="card-date"></span>
+        <span class="card-score"></span>
+      </div>
+      <h2 class="card-title"></h2>
+      <p class="card-summary"></p>
+
+      <div class="card-meta">
+        <span class="card-ambito"></span>
+        <span class="card-modalidade"></span>
+      </div>
+
+      <div class="card-financeiro">
+        <span class="card-valor"></span>
+        <span class="card-prazo"></span>
+      </div>
+
+      <div class="card-insights">
+        <button class="insights-toggle" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          <span>Por que é oportunidade</span>
+        </button>
+        <div class="insights-body" hidden>
+          <p class="card-justificativa"></p>
+        </div>
+      </div>
+
+      <a class="card-link" href="#" target="_blank" rel="noopener">
+        Ver edital completo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </article>
+  </template>
+
+  <script src="app.js?v=1"></script>
+</body>
+</html>

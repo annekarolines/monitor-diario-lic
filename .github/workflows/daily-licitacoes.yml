@@ -1,0 +1,41 @@
+name: Daily Licitacoes Update
+
+on:
+  schedule:
+    # Roda às 11h UTC = 8h horário de Brasília, apenas dias úteis
+    # PNCP publica novas licitações a partir das 6-8h; fins de semana têm pouquíssimas publicações
+    - cron: "0 11 * * 1-5"
+  workflow_dispatch: # permite rodar manualmente pelo GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  update-licitacoes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Rodar coleta de licitações
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python fetch_licitacoes.py
+
+      - name: Commitar licitações atualizadas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/licitacoes.json
+          git diff --staged --quiet || git commit -m "licitacoes: atualização diária $(date -u '+%Y-%m-%d')"
+          git push
