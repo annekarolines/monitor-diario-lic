@@ -3,9 +3,8 @@ name: Daily Licitacoes Update
 on:
   schedule:
     # Roda às 11h UTC = 8h horário de Brasília, apenas dias úteis
-    # PNCP publica novas licitações a partir das 6-8h; fins de semana têm pouquíssimas publicações
     - cron: "0 11 * * 1-5"
-  workflow_dispatch: # permite rodar manualmente pelo GitHub
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -39,3 +38,23 @@ jobs:
           git add data/licitacoes.json
           git diff --staged --quiet || git commit -m "licitacoes: atualização diária $(date -u '+%Y-%m-%d')"
           git push
+
+      - name: Deploy para Locaweb (monitor.annekarolines.com.br)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/monitor/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.claude/**
+            **/node_modules/**
+            **/__pycache__/**
+            fetch_licitacoes.py
+            requirements.txt
+            serve.py
+            .env.example
+            .gitignore
