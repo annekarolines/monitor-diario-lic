@@ -1,7 +1,35 @@
 {
-  "last_updated": "2026-03-25T22:44:04.721366+00:00",
-  "total": 4,
+  "last_updated": "2026-03-26T12:01:37.442659+00:00",
+  "total": 7,
   "licitacoes": [
+    {
+      "id": "96eb8451077f92d7f8172d6add7996fa",
+      "orgao": "MUNICIPIO DE BENJAMIN CONSTANT",
+      "ambito": "Municipal – Benjamin Constant/AM",
+      "objeto": "Contratação de agência de publicidade e propaganda para serviços técnicos integrados. Inclui planejamento, criação, execução e distribuição de publicidade para ações institucionais e informação pública.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 600800.0,
+      "prazo_proposta": "2026-04-06",
+      "data_publicacao": "2026-03-23",
+      "fonte_url": "https://licitanet.com.br/sessao/172398",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo abrangente de serviços integrados de publicidade tornam esta uma excelente oportunidade para agências de comunicação."
+    },
+    {
+      "id": "04904c93362bbdafb00b0824e173b626",
+      "orgao": "SECRETARIA DE ESTADO DA SAUDE - SES",
+      "ambito": "Municipal – João Pessoa/PB",
+      "objeto": "Contratação de agência de publicidade e propaganda para a divulgação institucional das ações do Projeto AMAR da Secretaria de Estado da Saúde.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 3973795.05,
+      "prazo_proposta": "2025-10-09",
+      "data_publicacao": "2026-03-20",
+      "fonte_url": "https://www.centraldecompras.pb.gov.br/appls/sgc/edital.nsf/Web?OpenAgent&pageClassName=EditalPage&action=abrir&unid=F9E43126D6BBE46903258D1700509772",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Este é um contrato de alto valor para serviços de publicidade e propaganda, diretamente alinhado ao core business de uma agência de comunicação."
+    },
     {
       "id": "c45cd69e2ac20d801796065ed15d99f6",
       "orgao": "CAMARA MUNICIPAL DE FAZENDA RIO GRANDE",
@@ -29,6 +57,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O alto valor estimado e o escopo completo de serviços de publicidade para um município representam uma grande oportunidade de negócio."
+    },
+    {
+      "id": "4c2da927d1d806cb9de7322a46eeaaab",
+      "orgao": "GOIAS TRIBUNAL DE CONTAS",
+      "ambito": "Municipal – Goiânia/GO",
+      "objeto": "Contratação de agência de publicidade para planejar, criar e executar ações de comunicação integradas, abrangendo desde a concepção até a distribuição de campanhas para o Tribunal de Contas.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 295000.0,
+      "prazo_proposta": "2026-05-19",
+      "data_publicacao": "2026-03-18",
+      "fonte_url": "https://pncp.gov.br/app/editais/02291730000114/2026/30",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "É uma oportunidade robusta para agências que buscam contratos de publicidade institucional com órgãos públicos de médio porte."
     },
     {
       "id": "1c12a09604e78eea82d69b12b84a4c37",
