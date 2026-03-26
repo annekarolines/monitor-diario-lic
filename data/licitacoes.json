@@ -1,6 +1,6 @@
 {
   "last_updated": "2026-03-26T12:01:37.442659+00:00",
-  "total": 7,
+  "total": 4,
   "licitacoes": [
     {
       "id": "96eb8451077f92d7f8172d6add7996fa",
@@ -15,48 +15,6 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O alto valor estimado e o escopo abrangente de serviços integrados de publicidade tornam esta uma excelente oportunidade para agências de comunicação."
-    },
-    {
-      "id": "04904c93362bbdafb00b0824e173b626",
-      "orgao": "SECRETARIA DE ESTADO DA SAUDE - SES",
-      "ambito": "Municipal – João Pessoa/PB",
-      "objeto": "Contratação de agência de publicidade e propaganda para a divulgação institucional das ações do Projeto AMAR da Secretaria de Estado da Saúde.",
-      "modalidade": "Concorrência - Presencial",
-      "valor_estimado": 3973795.05,
-      "prazo_proposta": "2025-10-09",
-      "data_publicacao": "2026-03-20",
-      "fonte_url": "https://www.centraldecompras.pb.gov.br/appls/sgc/edital.nsf/Web?OpenAgent&pageClassName=EditalPage&action=abrir&unid=F9E43126D6BBE46903258D1700509772",
-      "relevance_score": 9,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "Este é um contrato de alto valor para serviços de publicidade e propaganda, diretamente alinhado ao core business de uma agência de comunicação."
-    },
-    {
-      "id": "c45cd69e2ac20d801796065ed15d99f6",
-      "orgao": "CAMARA MUNICIPAL DE FAZENDA RIO GRANDE",
-      "ambito": "Municipal – Fazenda Rio Grande/PR",
-      "objeto": "Contratação de uma agência para prestação de serviços de publicidade.",
-      "modalidade": "Concorrência - Presencial",
-      "valor_estimado": 300000.0,
-      "prazo_proposta": "2026-03-24",
-      "data_publicacao": "2026-03-20",
-      "fonte_url": "https://pncp.gov.br/app/editais/00442239000111/2026/3",
-      "relevance_score": 8,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "O valor expressivo e o escopo claro de publicidade via agência tornam esta uma oportunidade estratégica para agências de comunicação."
-    },
-    {
-      "id": "942b1b395b77c6b5435253b9dd60d80f",
-      "orgao": "MUNICIPIO DE SAO JOAO DA BOA VISTA",
-      "ambito": "Municipal – São João da Boa Vista/SP",
-      "objeto": "Contratação de agência de publicidade para planejar, criar e executar campanhas de comunicação e publicidade para a Prefeitura de São João da Boa Vista.",
-      "modalidade": "Concorrência - Presencial",
-      "valor_estimado": 2500000.0,
-      "prazo_proposta": "2026-03-23",
-      "data_publicacao": "2026-03-18",
-      "fonte_url": "https://pncp.gov.br/app/editais/46429379000150/2025/275",
-      "relevance_score": 9,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "O alto valor estimado e o escopo completo de serviços de publicidade para um município representam uma grande oportunidade de negócio."
     },
     {
       "id": "4c2da927d1d806cb9de7322a46eeaaab",
