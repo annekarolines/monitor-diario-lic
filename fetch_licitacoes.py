@@ -464,7 +464,8 @@ def run():
 
 
 def _filter_candidates(raw_items: list, existing_ids: set) -> list:
-    """Aplica pré-filtro de keyword + valor + deduplicação."""
+    """Aplica pré-filtro de keyword + valor + prazo + deduplicação."""
+    hoje_iso = date.today().isoformat()
     candidates = []
     for item in raw_items:
         objeto = item.get("objetoCompra", "")
@@ -476,6 +477,10 @@ def _filter_candidates(raw_items: list, existing_ids: set) -> list:
             continue
         valor = item.get("valorTotalEstimado")
         if valor is not None and float(valor) < MIN_VALOR:
+            continue
+        # Excluir licitações com prazo de proposta já vencido
+        prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
+        if prazo_raw and prazo_raw[:10] < hoje_iso:
             continue
         candidates.append(item)
     return candidates
