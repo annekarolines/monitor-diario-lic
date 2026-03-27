@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-03-26T12:01:37.442659+00:00",
-  "total": 4,
+  "last_updated": "2026-03-27T11:58:07.100858+00:00",
+  "total": 6,
   "licitacoes": [
+    {
+      "id": "6605801bef5194744a56130a242e09bb",
+      "orgao": "MUNICIPIO DE ARACAJU",
+      "ambito": "Municipal – Aracaju/SE",
+      "objeto": "Contratação de serviços de publicidade e propaganda para os órgãos e entidades da administração municipal de Aracaju/SE. Serão selecionadas até 3 agências.",
+      "modalidade": "Concorrência - Eletrônica",
+      "valor_estimado": 27270000.0,
+      "prazo_proposta": "2026-05-27",
+      "data_publicacao": "2026-03-26",
+      "fonte_url": "https://aracajucompras.se.gov.br/publico/WKF.aspx?code=SEPLOG-CP0001/2026&validation=55055",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "É uma oportunidade de grande porte para agências de comunicação, com um contrato de alto valor e escopo amplo para o Poder Executivo Municipal."
+    },
     {
       "id": "96eb8451077f92d7f8172d6add7996fa",
       "orgao": "MUNICIPIO DE BENJAMIN CONSTANT",
@@ -29,6 +43,20 @@
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "É uma oportunidade robusta para agências que buscam contratos de publicidade institucional com órgãos públicos de médio porte."
+    },
+    {
+      "id": "a0d6bd465ee5341b2b59342c0bbe5776",
+      "orgao": "MINISTERIO DO TRABALHO",
+      "ambito": "Municipal – Brasília/DF",
+      "objeto": "Contratação de agência para serviços de comunicação institucional, abrangendo prospecção, planejamento, desenvolvimento, implementação, manutenção e monitoramento de soluções. Inclui relacionamento com a imprensa e relações públicas em território nacional e internacional.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 15774242.31,
+      "prazo_proposta": "2026-05-13",
+      "data_publicacao": "2026-03-17",
+      "fonte_url": "https://pncp.gov.br/app/editais/23612685000122/2026/5",
+      "relevance_score": 9,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "Trata-se de um contrato de grande porte com escopo abrangente em comunicação institucional, ideal para agências especializadas neste segmento."
     },
     {
       "id": "1c12a09604e78eea82d69b12b84a4c37",
