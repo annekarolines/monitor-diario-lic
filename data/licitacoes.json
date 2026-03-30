@@ -1,7 +1,35 @@
 {
-  "last_updated": "2026-03-27T11:58:07.100858+00:00",
-  "total": 6,
+  "last_updated": "2026-03-30T12:03:25.704399+00:00",
+  "total": 10,
   "licitacoes": [
+    {
+      "id": "88d2ad4d7c3392bd1acfabee62a498b1",
+      "orgao": "MUNICIPIO DE ALCINOPOLIS",
+      "ambito": "Municipal – Alcinópolis/MS",
+      "objeto": "Contratação de agência de publicidade para serviços contínuos de publicidade e propaganda. Inclui planejamento, criação, execução e distribuição de campanhas para divulgar ações e serviços do município.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 620000.0,
+      "prazo_proposta": "2026-06-01",
+      "data_publicacao": "2026-03-27",
+      "fonte_url": "https://www.alcinopolis.ms.gov.br/site/wp-content/uploads/2026/03/Diario-Oficial-Eletronico-Edicao-no-2.076-27-03-26.pdf",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O valor estimado e o escopo abrangente de publicidade e propaganda tornam esta uma oportunidade estratégica para uma agência de comunicação."
+    },
+    {
+      "id": "5c4ff788eaf846def800eb22a23fbdb3",
+      "orgao": "CAMARA MUNICIPAL DE PEIXOTO DE AZEVEDO",
+      "ambito": "Municipal – Peixoto de Azevedo/MT",
+      "objeto": "Contratação de agência especializada para prestação de serviços de propaganda e publicidade para a Câmara Municipal de Peixoto de Azevedo.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 550000.0,
+      "prazo_proposta": "2026-05-14",
+      "data_publicacao": "2026-03-26",
+      "fonte_url": "https://www.gp.srv.br/transparencia_peixotodeazevedo/servlet/licitacoes_v2?2",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "É uma oportunidade direta para agências de comunicação, com escopo claro em propaganda e publicidade e valor estimado relevante."
+    },
     {
       "id": "6605801bef5194744a56130a242e09bb",
       "orgao": "MUNICIPIO DE ARACAJU",
@@ -17,6 +45,20 @@
       "justificativa": "É uma oportunidade de grande porte para agências de comunicação, com um contrato de alto valor e escopo amplo para o Poder Executivo Municipal."
     },
     {
+      "id": "9b27cd4478cf20051cbd08837f64a73c",
+      "orgao": "MUNICIPIO DE CRUZ DAS ALMAS",
+      "ambito": "Municipal – Cruz das Almas/BA",
+      "objeto": "Contratação de uma agência de propaganda para serviços completos de publicidade, incluindo planejamento, criação e execução de campanhas. O objetivo é difundir informações e ideias do município através de diversos meios de comunicação.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 1900000.0,
+      "prazo_proposta": "2026-05-19",
+      "data_publicacao": "2026-03-23",
+      "fonte_url": "https://pncp.gov.br/app/editais/14006977000120/2026/32",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo abrangente de publicidade para um município representam uma excelente oportunidade para uma agência de comunicação full-service."
+    },
+    {
       "id": "96eb8451077f92d7f8172d6add7996fa",
       "orgao": "MUNICIPIO DE BENJAMIN CONSTANT",
       "ambito": "Municipal – Benjamin Constant/AM",
@@ -29,6 +71,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O alto valor estimado e o escopo abrangente de serviços integrados de publicidade tornam esta uma excelente oportunidade para agências de comunicação."
+    },
+    {
+      "id": "6ae86d48ddc6fd18f06e479b977d06dd",
+      "orgao": "MUNICIPIO DE VALENCA",
+      "ambito": "Municipal – Valença/RJ",
+      "objeto": "Contratação de empresa para serviços gráficos de publicidade, incluindo a confecção de materiais para eventos e divulgações. O objetivo é atender a Assessoria de Comunicação e outros setores do Município de Valença – RJ.",
+      "modalidade": "Pregão - Eletrônico",
+      "valor_estimado": 257435.37,
+      "prazo_proposta": "2026-04-08",
+      "data_publicacao": "2026-03-20",
+      "fonte_url": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/landing?destino=acompanhamento-compra&compra=98592105900152026",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Esta licitação representa uma oportunidade clara para agências com expertise em produção gráfica e publicidade para órgãos públicos, com um valor estimado relevante."
     },
     {
       "id": "4c2da927d1d806cb9de7322a46eeaaab",
