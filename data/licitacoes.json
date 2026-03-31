@@ -1,7 +1,49 @@
 {
-  "last_updated": "2026-03-30T12:03:25.704399+00:00",
-  "total": 10,
+  "last_updated": "2026-03-31T12:00:07.589689+00:00",
+  "total": 14,
   "licitacoes": [
+    {
+      "id": "c06f188ca6337ba823bb7d8ef7f87580",
+      "orgao": "MUNICIPIO DE SAO JOAO DO SUL",
+      "ambito": "Municipal – São João do Sul/SC",
+      "objeto": "Seleção e contratação de agência de propaganda para prestação de serviços de publicidade à Prefeitura Municipal de São João do Sul.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 600000.0,
+      "prazo_proposta": "2026-05-26",
+      "data_publicacao": "2026-03-31",
+      "fonte_url": "https://pncp.gov.br/app/editais/82547274000160/2026/39",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O valor estimado e o escopo de publicidade para a prefeitura indicam uma oportunidade robusta para agências."
+    },
+    {
+      "id": "50fd55d2debc79bcc6ac4c9e33dcd17f",
+      "orgao": "MUNICIPIO DE BARAO DE COCAIS",
+      "ambito": "Municipal – Barão de Cocais/MG",
+      "objeto": "Contratação de agência para serviços de propaganda institucional do município.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 1000000.0,
+      "prazo_proposta": "2026-05-27",
+      "data_publicacao": "2026-03-30",
+      "fonte_url": "https://pncp.gov.br/app/editais/18317685000160/2025/182",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo de propaganda institucional representam uma oportunidade estratégica e abrangente para a agência."
+    },
+    {
+      "id": "e862ad7d680b3631c0b5af262bbbeeb6",
+      "orgao": "MUNICIPIO DE PARA DE MINAS",
+      "ambito": "Municipal – Pará de Minas/MG",
+      "objeto": "Contratação de Agência de Publicidade e Propaganda para prestação de serviços de publicidade, incluindo planejamento, criação, execução e distribuição de campanhas em diversos meios.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 5074800.0,
+      "prazo_proposta": "2026-05-26",
+      "data_publicacao": "2026-03-27",
+      "fonte_url": "https://pncp.gov.br/app/editais/18313817000185/2026/56",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Este contrato de alto valor e escopo abrangente para um município representa uma excelente oportunidade para uma agência de comunicação consolidada."
+    },
     {
       "id": "88d2ad4d7c3392bd1acfabee62a498b1",
       "orgao": "MUNICIPIO DE ALCINOPOLIS",
@@ -15,6 +57,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O valor estimado e o escopo abrangente de publicidade e propaganda tornam esta uma oportunidade estratégica para uma agência de comunicação."
+    },
+    {
+      "id": "6743bc0c187b76b4ba81293ddd811046",
+      "orgao": "MUNICIPIO DE CARACOL",
+      "ambito": "Municipal – Caracol/MS",
+      "objeto": "Contratação de agência para serviços contínuos de publicidade e propaganda. Inclui planejamento, criação, execução e distribuição de campanhas em diversos meios.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 720000.0,
+      "prazo_proposta": "2026-05-28",
+      "data_publicacao": "2026-03-26",
+      "fonte_url": "https://pncp.gov.br/app/editais/03217924000132/2026/22",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo abrangente em publicidade e propaganda tornam esta uma excelente oportunidade para agências de comunicação."
     },
     {
       "id": "5c4ff788eaf846def800eb22a23fbdb3",
