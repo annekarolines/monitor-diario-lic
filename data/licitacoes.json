@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-04-01T12:03:27.075364+00:00",
-  "total": 14,
+  "last_updated": "2026-04-02T12:18:01.594133+00:00",
+  "total": 17,
   "licitacoes": [
+    {
+      "id": "8f55ec83c86c8a4d075a8cdbac600d0f",
+      "orgao": "CAMARA MUNICIPAL CACERES",
+      "ambito": "Municipal – Cáceres/MT",
+      "objeto": "Contratação de agência para prestação de serviços de publicidade e propaganda para a Câmara Municipal de Cáceres.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 600000.0,
+      "prazo_proposta": "2026-05-26",
+      "data_publicacao": "2026-03-31",
+      "fonte_url": "https://www.caceres.mt.leg.br/",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo direto em propaganda e publicidade tornam esta uma excelente oportunidade para agências de comunicação."
+    },
     {
       "id": "c06f188ca6337ba823bb7d8ef7f87580",
       "orgao": "MUNICIPIO DE SAO JOAO DO SUL",
@@ -59,6 +73,20 @@
       "justificativa": "O valor estimado e o escopo abrangente de publicidade e propaganda tornam esta uma oportunidade estratégica para uma agência de comunicação."
     },
     {
+      "id": "eafb41f1282ca393c70749a39f0a83e2",
+      "orgao": "CONSELHO REGIONAL DE ENFERMAGEM COREN",
+      "ambito": "Municipal – Fortaleza/CE",
+      "objeto": "Contratação de agência de propaganda para serviços completos de publicidade, incluindo planejamento, criação, execução e distribuição de campanhas. Abrange todas as etapas da comunicação para públicos de interesse do órgão.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 3500000.0,
+      "prazo_proposta": "2026-06-22",
+      "data_publicacao": "2026-03-26",
+      "fonte_url": "https://pncp.gov.br/app/editais/06572788000197/2027/1",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "É uma oportunidade estratégica devido ao alto valor estimado e ao escopo abrangente de serviços de publicidade para um órgão público."
+    },
+    {
       "id": "6743bc0c187b76b4ba81293ddd811046",
       "orgao": "MUNICIPIO DE CARACOL",
       "ambito": "Municipal – Caracol/MS",
@@ -99,6 +127,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "É uma oportunidade de grande porte para agências de comunicação, com um contrato de alto valor e escopo amplo para o Poder Executivo Municipal."
+    },
+    {
+      "id": "b18de5fd7de3fad38147a9c3c2fc7912",
+      "orgao": "MUNICIPIO DE MONSENHOR GIL",
+      "ambito": "Municipal – Monsenhor Gil/PI",
+      "objeto": "Contratação de empresa para serviços de comunicação institucional estratégica, incluindo produção de documentários, audiovisual, divulgação em mídia volante e serviços gráficos editoriais para a Prefeitura.",
+      "modalidade": "Pregão - Eletrônico",
+      "valor_estimado": 556715.96,
+      "prazo_proposta": "2026-04-08",
+      "data_publicacao": "2026-03-23",
+      "fonte_url": "https://app2-compras.licitamonsenhorgilpi.com.br/pesquisa/7106",
+      "relevance_score": 9,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "O alto valor estimado e o escopo abrangente de comunicação institucional e produção de conteúdo tornam esta uma oportunidade estratégica para agências."
     },
     {
       "id": "9b27cd4478cf20051cbd08837f64a73c",
