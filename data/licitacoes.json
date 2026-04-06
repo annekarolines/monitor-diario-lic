@@ -1,7 +1,35 @@
 {
-  "last_updated": "2026-04-03T11:47:17.553443+00:00",
-  "total": 17,
+  "last_updated": "2026-04-06T11:58:27.142212+00:00",
+  "total": 19,
   "licitacoes": [
+    {
+      "id": "f052c1d9d657928cf3df1b8ddcc755aa",
+      "orgao": "MUNICIPIO DE SAO JOAO DO SUL",
+      "ambito": "Municipal – São João do Sul/SC",
+      "objeto": "Seleção e contratação de agência de propaganda para prestação de serviços de publicidade para a Prefeitura Municipal de São João do Sul.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 600000.0,
+      "prazo_proposta": "2026-05-26",
+      "data_publicacao": "2026-03-31",
+      "fonte_url": "https://pncp.gov.br/app/editais/82547274000160/2026/41",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo abrangente de serviços de publicidade tornam esta uma oportunidade estratégica para a agência."
+    },
+    {
+      "id": "81e2f8beea3ee7dc443636e00a9857c5",
+      "orgao": "MUNICIPIO DE GUARATUBA",
+      "ambito": "Municipal – Guaratuba/PR",
+      "objeto": "Contratação de agência de propaganda para serviços completos de publicidade, incluindo planejamento, criação, execução e distribuição de campanhas para o Município de Guaratuba/PR.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 1500000.0,
+      "prazo_proposta": "2026-06-01",
+      "data_publicacao": "2026-03-31",
+      "fonte_url": "https://pncp.gov.br/app/editais/76017474000108/2026/73",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo abrangente de serviços de publicidade tornam esta uma oportunidade estratégica para agências de comunicação."
+    },
     {
       "id": "8f55ec83c86c8a4d075a8cdbac600d0f",
       "orgao": "CAMARA MUNICIPAL CACERES",
@@ -43,6 +71,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O alto valor estimado e o escopo de propaganda institucional representam uma oportunidade estratégica e abrangente para a agência."
+    },
+    {
+      "id": "5d9ef4bd3e3e4e6675a8c109308e770d",
+      "orgao": "GOIOERE CAMARA MUNICIPAL",
+      "ambito": "Municipal – Goioerê/PR",
+      "objeto": "Contratação de agência para serviços de publicidade institucional da Câmara Municipal de Goioerê. Inclui planejamento, criação, produção e veiculação de campanhas informativas e educativas.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 220000.0,
+      "prazo_proposta": "2026-06-02",
+      "data_publicacao": "2026-03-30",
+      "fonte_url": "https://pncp.gov.br/app/editais/80900764000172/2026/11",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O valor estimado e o escopo abrangente de publicidade institucional tornam esta uma oportunidade sólida para agências com experiência em órgãos públicos."
     },
     {
       "id": "e862ad7d680b3631c0b5af262bbbeeb6",
@@ -225,20 +267,6 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "Este é um contrato de alto valor para serviços abrangentes de publicidade, representando uma excelente oportunidade para agências de comunicação."
-    },
-    {
-      "id": "e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6",
-      "orgao": "SECRETARIA MUNICIPAL DE COMUNICACAO, OUVIDORIA E MIDIAS SOCIAIS",
-      "ambito": "Municipal – Açu/RN",
-      "objeto": "Contratação de agência de publicidade para prestação de serviços de publicidade e comunicação digital, incluindo estratégia, criação e veiculação.",
-      "modalidade": "Concorrência - Presencial",
-      "valor_estimado": 2500000.0,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-03-04",
-      "fonte_url": "https://pncp.gov.br/app/editais/64511024000198/2026/1",
-      "relevance_score": 9,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "Contrato de R$ 2,5M para secretaria de comunicação municipal, escopo abrangente em publicidade e digital."
     }
   ]
 }
