@@ -497,13 +497,15 @@ def analyze_with_gemini(item: dict, retries=3) -> dict:
                 ),
             )
             text = response.text.strip()
+            # remove blocos de código markdown
             if text.startswith("```"):
                 lines = text.split("\n")
                 text = "\n".join(lines[1:-1]) if len(lines) > 2 else text
-            if not text.startswith("{"):
-                start = text.find("{")
-                if start >= 0:
-                    text = text[start:]
+            # localiza o início do objeto JSON
+            start = text.find("{")
+            end   = text.rfind("}") + 1
+            if start >= 0 and end > start:
+                text = text[start:end]
             return json.loads(text)
 
         except Exception as e:
