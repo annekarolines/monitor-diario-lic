@@ -1,7 +1,21 @@
 {
-  "last_updated": "2026-04-06T11:58:27.142212+00:00",
-  "total": 19,
+  "last_updated": "2026-04-07T12:06:05.275002+00:00",
+  "total": 21,
   "licitacoes": [
+    {
+      "id": "512f663c153299069e797a70975b0bbd",
+      "orgao": "SAO GONCALO DOS CAMPOS CAMARA MUNICIPAL",
+      "ambito": "Municipal – São Gonçalo dos Campos/BA",
+      "objeto": "Contratação de agência de publicidade para serviços completos de publicidade institucional, incluindo planejamento, criação, produção e veiculação para a Câmara Municipal.",
+      "modalidade": "Concorrência - Eletrônica",
+      "valor_estimado": 300000.0,
+      "prazo_proposta": "2026-04-17",
+      "data_publicacao": "2026-04-02",
+      "fonte_url": "https://bllcompras.com/Process/ProcessView?param1=[gkz]lPWo0AKPo3jnZua73JnwWZIJbUlqqWBaycUpjsRfI_kqkEkAFCuZVLIcKOZrCzDgGfz5yWIJlyBDttC4/FBmp3wxjMnBjEPU5RbQSKByeq0=",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Esta é uma oportunidade estratégica devido ao valor expressivo e ao escopo abrangente de publicidade institucional para um órgão público."
+    },
     {
       "id": "f052c1d9d657928cf3df1b8ddcc755aa",
       "orgao": "MUNICIPIO DE SAO JOAO DO SUL",
@@ -71,6 +85,20 @@
       "relevance_score": 9,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O alto valor estimado e o escopo de propaganda institucional representam uma oportunidade estratégica e abrangente para a agência."
+    },
+    {
+      "id": "ece6b96e1db2d426935e1cc506e9970a",
+      "orgao": "CAMARA MUNICIPAL DE VEREADORES DE CUNHA PORA",
+      "ambito": "Municipal – Cunha Porã/SC",
+      "objeto": "Contratação de serviço para locação e operacionalização de equipamentos para transmissão ao vivo de sessões da Câmara Municipal em redes sociais como YouTube e Facebook.",
+      "modalidade": "Pregão - Presencial",
+      "valor_estimado": 135830.52,
+      "prazo_proposta": "2026-04-17",
+      "data_publicacao": "2026-03-30",
+      "fonte_url": "https://pncp.gov.br/app/editais/03028880000100/2026/8",
+      "relevance_score": 8,
+      "categoria": "Marketing Digital",
+      "justificativa": "A licitação é uma oportunidade para agências especializadas em gestão de conteúdo e transmissão ao vivo em plataformas digitais para órgãos públicos."
     },
     {
       "id": "5d9ef4bd3e3e4e6675a8c109308e770d",
