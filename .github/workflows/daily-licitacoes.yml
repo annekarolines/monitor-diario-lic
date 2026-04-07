@@ -29,6 +29,7 @@ jobs:
       - name: Rodar coleta de licitações
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TRANSPARENCIA_API_KEY: ${{ secrets.TRANSPARENCIA_API_KEY }}
         run: python fetch_licitacoes.py
 
       - name: Commitar licitações atualizadas

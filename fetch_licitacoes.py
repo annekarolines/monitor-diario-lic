@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Licitações de Comunicação — Coleta diária do PNCP
-Fonte: Portal Nacional de Contratações Públicas (pncp.gov.br)
-API pública, sem autenticação necessária.
+Licitações de Comunicação — Coleta diária
+Fontes:
+  1. PNCP  — Portal Nacional de Contratações Públicas (pncp.gov.br)
+  2. Portal da Transparência — api.portaldatransparencia.gov.br
 
-Endpoint: https://pncp.gov.br/pncp-consulta/v1/contratacoes/publicacao
-Formato de data: yyyyMMdd (sem traços)
-tamanhoPagina máximo: 50
+Limites Portal da Transparência:
+  - 00h-06h BRT: 700 req/min
+  - Demais horários: 400 req/min
+  - APIs restritas: 180 req/min
+  Usamos 120 req/min como margem segura (abaixo do limite restrito).
 """
 
 import os
@@ -14,6 +17,7 @@ import json
 import hashlib
 import time
 import re
+import math
 import unicodedata
 import requests
 import google.generativeai as genai
@@ -25,23 +29,31 @@ load_dotenv()
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-REQUEST_DELAY = 5       # segundos entre chamadas Gemini (free tier: 20 RPM)
-MIN_VALOR     = 10_000.0
-MAX_AGE_DAYS  = 30      # licitações mais antigas são removidas do painel
-PAGE_SIZE     = 50      # máximo permitido pela API PNCP
+# ---------------------------------------------------------------------------
+# Constantes
+# ---------------------------------------------------------------------------
 
+GEMINI_DELAY  = 5        # segundos entre chamadas Gemini (free tier: 20 RPM)
+MIN_VALOR     = 10_000.0
+MAX_AGE_DAYS  = 30
+PAGE_SIZE     = 50       # máximo PNCP
+
+# PNCP
 PNCP_BASE = "https://pncp.gov.br/pncp-consulta/v1/contratacoes/publicacao"
+# Modalidades: 3=Concurso, 4=Concorrência Eletrônica, 5=Concorrência Presencial,
+#              6=Pregão Eletrônico, 7=Pregão Presencial, 8=Dispensa, 9=Inexigibilidade
+MODALIDADES = [4, 5, 6, 7, 8, 9, 3]
+
+# Portal da Transparência
+TRANSPARENCIA_BASE      = "https://api.portaldatransparencia.gov.br/api-de-dados/licitacoes"
+TRANSPARENCIA_PAGE_SIZE = 500   # máximo aceito pela API
+TRANSPARENCIA_RPM       = 120   # conservador: abaixo do limite de 180 (APIs restritas)
+
 DATA_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "licitacoes.json")
 
-# Modalidades de contratação a consultar
-# 4=Concorrência Eletrônica, 5=Concorrência Presencial
-# 6=Pregão Eletrônico, 7=Pregão Presencial
-# 8=Dispensa, 9=Inexigibilidade, 3=Concurso
-MODALIDADES = [4, 5, 6, 7, 8, 9, 3]
-
 # ---------------------------------------------------------------------------
-# Palavras-chave para pré-filtro (antes de qualquer chamada ao Gemini)
+# Palavras-chave
 # ---------------------------------------------------------------------------
 
 KEYWORDS = [
@@ -117,7 +129,33 @@ Responda APENAS com o JSON, sem texto adicional, sem blocos de código."""
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Rate Limiter (Portal da Transparência)
+# ---------------------------------------------------------------------------
+
+class RateLimiter:
+    """
+    Controla requisições por minuto respeitando os limites da API.
+    Usa intervalo mínimo entre chamadas para distribuir as requisições
+    uniformemente e nunca ultrapassar o limite configurado.
+    """
+    def __init__(self, rpm: int):
+        self._interval = 60.0 / rpm   # segundos mínimos entre chamadas
+        self._last_call = 0.0
+
+    def wait(self):
+        now = time.time()
+        elapsed = now - self._last_call
+        remaining = self._interval - elapsed
+        if remaining > 0:
+            time.sleep(remaining)
+        self._last_call = time.time()
+
+
+transp_limiter = RateLimiter(TRANSPARENCIA_RPM)
+
+
+# ---------------------------------------------------------------------------
+# Helpers gerais
 # ---------------------------------------------------------------------------
 
 def load_existing_data():
@@ -140,7 +178,6 @@ def licitacao_id(url):
 
 
 def normalize_text(text):
-    """Remove acentos e converte para minúsculas para comparação."""
     if not text:
         return ""
     nfkd = unicodedata.normalize("NFKD", text.lower())
@@ -148,15 +185,43 @@ def normalize_text(text):
 
 
 def keyword_match(objeto):
-    """Retorna True se o objeto contém ao menos uma keyword e nenhuma exclusão."""
     norm = normalize_text(objeto)
     if any(normalize_text(kw) in norm for kw in EXCLUDE_KEYWORDS):
         return False
     return any(normalize_text(kw) in norm for kw in KEYWORDS)
 
 
+def format_valor(valor):
+    if valor is None:
+        return "não informado"
+    try:
+        return f"R$ {float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except (ValueError, TypeError):
+        return "não informado"
+
+
+def _iso_from_br(date_str: str) -> str:
+    """Converte 'dd/MM/yyyy ...' → 'yyyy-MM-dd'. Retorna '' se inválido."""
+    if not date_str:
+        return ""
+    try:
+        if "/" in date_str[:5]:
+            parts = date_str[:10].split("/")
+            return f"{parts[2]}-{parts[1]}-{parts[0]}"
+        return date_str[:10]
+    except Exception:
+        return ""
+
+
+# ---------------------------------------------------------------------------
+# PNCP — helpers e fetch
+# ---------------------------------------------------------------------------
+
+def pncp_date(d: date) -> str:
+    return d.strftime("%Y%m%d")
+
+
 def parse_ambito(item):
-    """Deriva string de âmbito a partir dos metadados do PNCP."""
     orgao = item.get("orgaoEntidade", {})
     esfera = orgao.get("esferaNome", "").strip()
     uf = (item.get("unidadeOrgao", {}).get("ufSigla", "") or
@@ -175,58 +240,26 @@ def parse_ambito(item):
         elif uf:
             return f"Municipal – {uf}"
         return "Municipal"
-    # Fallback: tenta derivar pelo CNPJ do órgão (municipal por padrão)
     if municipio and uf:
         return f"Municipal – {municipio}/{uf}"
     return esfera or "Não informado"
 
 
-def format_valor(valor):
-    """Formata valor numérico para string legível."""
-    if valor is None:
-        return "não informado"
-    try:
-        return f"R$ {float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    except (ValueError, TypeError):
-        return "não informado"
-
-
 def build_pncp_url(item):
-    """
-    Monta a URL direta no PNCP para o edital.
-    Prioridade: linkSistemaOrigem → URL construída com cnpj/ano/sequencial.
-    Formato PNCP: https://pncp.gov.br/app/editais/{cnpj}/{ano}/{sequencial}
-    """
     link_origem = (item.get("linkSistemaOrigem") or "").strip()
     if link_origem:
         return link_origem
-
     cnpj = item.get("orgaoEntidade", {}).get("cnpj", "").replace(".", "").replace("/", "").replace("-", "")
     ano  = item.get("anoCompra") or (item.get("dataPublicacaoPncp", "")[:4])
     seq  = item.get("sequencialCompra", "")
     if cnpj and ano and seq:
         return f"https://pncp.gov.br/app/editais/{cnpj}/{ano}/{seq}"
-
     return "https://pncp.gov.br/app/editais"
 
 
-# ---------------------------------------------------------------------------
-# PNCP API
-# ---------------------------------------------------------------------------
-
-def pncp_date(d: date) -> str:
-    """Converte date para formato yyyyMMdd exigido pela API PNCP."""
-    return d.strftime("%Y%m%d")
-
-
 def fetch_pncp_modalidade(data_ini: str, data_fim: str, modalidade: int) -> list:
-    """
-    Busca licitações de uma modalidade no intervalo de datas (paginado).
-    data_ini / data_fim no formato yyyyMMdd.
-    """
     all_items = []
     pagina = 1
-
     while True:
         params = {
             "dataInicial": data_ini,
@@ -253,11 +286,9 @@ def fetch_pncp_modalidade(data_ini: str, data_fim: str, modalidade: int) -> list
         if isinstance(payload, dict):
             total_reg = payload.get("totalRegistros", 0)
             if total_reg and PAGE_SIZE:
-                import math
                 total_pages = math.ceil(total_reg / PAGE_SIZE)
 
         all_items.extend(items)
-
         if pagina >= total_pages or len(items) < PAGE_SIZE:
             break
         pagina += 1
@@ -266,7 +297,6 @@ def fetch_pncp_modalidade(data_ini: str, data_fim: str, modalidade: int) -> list
 
 
 def fetch_pncp(data_ini: str, data_fim: str) -> list:
-    """Busca todas as modalidades no intervalo e retorna lista unificada."""
     all_items = []
     for cod in MODALIDADES:
         items = fetch_pncp_modalidade(data_ini, data_fim, cod)
@@ -275,31 +305,178 @@ def fetch_pncp(data_ini: str, data_fim: str) -> list:
     return all_items
 
 
-def determine_date_range(existing_ids: set) -> tuple[str, str]:
-    """
-    Define o intervalo de busca:
-    1. Últimos 10 dias (janela padrão diária)
-    2. Se nenhum resultado relevante esperado, expande para 1° de janeiro
-    """
-    hoje = date.today()
-    dez_dias_atras = hoje - timedelta(days=10)
-    janeiro = date(hoje.year, 1, 1)
+# ---------------------------------------------------------------------------
+# Portal da Transparência — normalização e fetch
+# ---------------------------------------------------------------------------
 
-    # Sempre começa pela janela de 10 dias
-    return pncp_date(dez_dias_atras), pncp_date(hoje)
+def transparencia_date(d: date) -> str:
+    """Converte date para 'dd/MM/yyyy' exigido pela API da Transparência."""
+    return d.strftime("%d/%m/%Y")
+
+
+def normalize_transparencia_item(item: dict) -> dict:
+    """
+    Converte um item do Portal da Transparência para o formato interno
+    compatível com as funções existentes (parse_ambito, build_pncp_url, etc.).
+    Múltiplos fallbacks para lidar com variações de schema da API.
+    """
+    # Órgão
+    orgao_nome = (
+        item.get("unidadeGestora", {}).get("nome") or
+        item.get("unidadeGestora", {}).get("descricao") or
+        item.get("orgaoSuperior", {}).get("nome") or
+        item.get("orgao", {}).get("nome") or
+        "Órgão não informado"
+    )
+
+    # UF e município
+    uf        = item.get("municipio", {}).get("uf", "")
+    municipio = item.get("municipio", {}).get("nome", "")
+
+    # Objeto
+    objeto = item.get("objeto") or item.get("descricao") or ""
+
+    # Modalidade
+    modalidade = (
+        item.get("modalidade", {}).get("descricao") or
+        item.get("tipo", {}).get("descricao") or
+        "Não informada"
+    )
+
+    # Valor
+    valor = (
+        item.get("valor") or
+        item.get("valorEstimado") or
+        item.get("valorTotal") or
+        item.get("valorContrato")
+    )
+
+    # Datas
+    data_pub = _iso_from_br(
+        item.get("dataPublicacao") or item.get("dataAbertura") or ""
+    )
+    prazo = _iso_from_br(
+        item.get("dataEncerramentoProposta") or
+        item.get("dataAberturaProposta") or ""
+    )
+
+    # URL direta no Portal da Transparência
+    item_id  = item.get("id") or item.get("numero") or ""
+    fonte_url = (
+        f"https://portaldatransparencia.gov.br/licitacoes/{item_id}"
+        if item_id else "https://portaldatransparencia.gov.br/licitacoes"
+    )
+
+    return {
+        "_source": "transparencia",
+        "orgaoEntidade": {
+            "razaoSocial":  orgao_nome,
+            "esferaNome":   "Federal",   # Transparência cobre apenas federal
+            "ufSigla":      uf,
+            "municipioNome": municipio,
+        },
+        "unidadeOrgao": {
+            "ufSigla":      uf,
+            "municipioNome": municipio,
+        },
+        "objetoCompra":           objeto,
+        "modalidadeNome":         modalidade,
+        "valorTotalEstimado":     float(valor) if valor else None,
+        "dataPublicacaoPncp":     data_pub,
+        "dataEncerramentoProposta": prazo or None,
+        "linkSistemaOrigem":      fonte_url,
+    }
+
+
+def fetch_transparencia(data_ini: date, data_fim: date) -> list:
+    """
+    Busca licitações no Portal da Transparência para o intervalo de datas.
+    Respeita o rate limit configurado (TRANSPARENCIA_RPM = 120 req/min).
+    Retorna lista de itens já normalizados para o formato interno.
+    """
+    api_key = os.environ.get("TRANSPARENCIA_API_KEY", "")
+    if not api_key:
+        print("   TRANSPARENCIA_API_KEY não configurada — fonte ignorada.")
+        return []
+
+    headers = {
+        "chave-api-dados": api_key,
+        "Accept": "application/json",
+    }
+
+    all_items: list = []
+    pagina = 1
+    total_pages = 1
+
+    print(f"   Buscando Portal da Transparência ({transparencia_date(data_ini)} → {transparencia_date(data_fim)})...")
+
+    while pagina <= total_pages:
+        transp_limiter.wait()
+
+        params = {
+            "dataInicial": transparencia_date(data_ini),
+            "dataFinal":   transparencia_date(data_fim),
+            "pagina":      pagina,
+            "tamanhoPagina": TRANSPARENCIA_PAGE_SIZE,
+        }
+
+        try:
+            resp = requests.get(TRANSPARENCIA_BASE, params=params, headers=headers, timeout=30)
+
+            if resp.status_code == 401:
+                print("   Chave da API da Transparência inválida ou expirada.")
+                break
+            if resp.status_code == 429:
+                print("   Rate limit atingido na Transparência — aguardando 60s...")
+                time.sleep(60)
+                continue  # tenta a mesma página novamente
+            if resp.status_code == 404:
+                break
+            resp.raise_for_status()
+
+            data = resp.json()
+
+        except Exception as e:
+            print(f"   Erro Transparência pág {pagina}: {e}")
+            break
+
+        # A API pode retornar lista direta ou objeto paginado
+        if isinstance(data, list):
+            items = data
+        elif isinstance(data, dict):
+            items = data.get("data", data.get("content", data.get("items", [])))
+            total_reg = data.get("totalRegistros", data.get("total", 0))
+            if total_reg and TRANSPARENCIA_PAGE_SIZE:
+                total_pages = math.ceil(total_reg / TRANSPARENCIA_PAGE_SIZE)
+        else:
+            break
+
+        if not items:
+            break
+
+        all_items.extend(items)
+        print(f"   Transparência pág {pagina}/{total_pages}: {len(items)} itens")
+
+        if len(items) < TRANSPARENCIA_PAGE_SIZE:
+            break
+        pagina += 1
+
+    normalized = [normalize_transparencia_item(i) for i in all_items]
+    print(f"   Total Transparência: {len(normalized)} licitações brutas")
+    return normalized
 
 
 # ---------------------------------------------------------------------------
 # Gemini
 # ---------------------------------------------------------------------------
 
-def analyze_with_gemini(item, retries=3):
+def analyze_with_gemini(item: dict, retries=3) -> dict:
     """Analisa licitação com Gemini e retorna JSON estruturado."""
-    orgao = item.get("orgaoEntidade", {}).get("razaoSocial", "Órgão não informado")
-    objeto = item.get("objetoCompra", "Objeto não informado")
+    orgao     = item.get("orgaoEntidade", {}).get("razaoSocial", "Órgão não informado")
+    objeto    = item.get("objetoCompra", "Objeto não informado")
     modalidade = item.get("modalidadeNome", "Não informada")
-    valor = format_valor(item.get("valorTotalEstimado"))
-    data = item.get("dataPublicacaoPncp", "")[:10]
+    valor     = format_valor(item.get("valorTotalEstimado"))
+    data      = item.get("dataPublicacaoPncp", "")[:10]
 
     prompt = SYSTEM_PROMPT + "\n\n" + ANALYSIS_PROMPT.format(
         orgao=orgao,
@@ -331,20 +508,43 @@ def analyze_with_gemini(item, retries=3):
 
         except Exception as e:
             err = str(e)
-            wait = REQUEST_DELAY
+            wait = GEMINI_DELAY
             if "retry_delay" in err or "Please retry in" in err:
                 m = re.search(r"retry in (\d+)", err)
                 wait = int(m.group(1)) + 2 if m else 60
             if attempt < retries - 1 and ("429" in err or "ResourceExhausted" in err):
-                print(f"           → Rate limit, aguardando {wait}s...")
+                print(f"           → Rate limit Gemini, aguardando {wait}s...")
                 time.sleep(wait)
                 continue
             raise
 
 
 # ---------------------------------------------------------------------------
-# Main
+# Pipeline
 # ---------------------------------------------------------------------------
+
+def _filter_candidates(raw_items: list, existing_ids: set) -> list:
+    """Pré-filtro: keyword + valor mínimo + prazo válido + deduplicação."""
+    hoje_iso = date.today().isoformat()
+    candidates = []
+    for item in raw_items:
+        objeto = item.get("objetoCompra", "")
+        url    = build_pncp_url(item)
+        lid    = licitacao_id(url)
+
+        if lid in existing_ids:
+            continue
+        if not keyword_match(objeto):
+            continue
+        valor = item.get("valorTotalEstimado")
+        if valor is not None and float(valor) < MIN_VALOR:
+            continue
+        prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
+        if prazo_raw and prazo_raw[:10] < hoje_iso:
+            continue
+        candidates.append(item)
+    return candidates
+
 
 def run():
     print(f"\n{'='*60}")
@@ -352,37 +552,52 @@ def run():
     print(f"{'='*60}\n")
 
     existing_data = load_existing_data()
-    existing_ids = {l["id"] for l in existing_data.get("licitacoes", [])}
-    cutoff_date = (date.today() - timedelta(days=MAX_AGE_DAYS)).isoformat()
+    existing_ids  = {l["id"] for l in existing_data.get("licitacoes", [])}
+    cutoff_date   = (date.today() - timedelta(days=MAX_AGE_DAYS)).isoformat()
 
-    hoje = date.today()
-    janeiro = date(hoje.year, 1, 1)
+    hoje          = date.today()
     dez_dias_atras = hoje - timedelta(days=10)
+    janeiro       = date(hoje.year, 1, 1)
 
-    data_ini = pncp_date(dez_dias_atras)
-    data_fim = pncp_date(hoje)
+    # ------------------------------------------------------------------
+    # 1. PNCP
+    # ------------------------------------------------------------------
+    print(f"1. PNCP ({dez_dias_atras} → {hoje})...\n")
+    pncp_raw = fetch_pncp(pncp_date(dez_dias_atras), pncp_date(hoje))
+    print(f"\n   Total bruto PNCP: {len(pncp_raw)}\n")
 
-    print(f"1. Buscando licitações do PNCP ({dez_dias_atras} → {hoje})...\n")
-    raw_items = fetch_pncp(data_ini, data_fim)
-    print(f"\n   Total bruto: {len(raw_items)} licitações\n")
+    candidates = _filter_candidates(pncp_raw, existing_ids)
 
-    # Pré-filtro inicial
-    candidates = _filter_candidates(raw_items, existing_ids)
-
-    # Se poucos resultados, expande para o ano inteiro
+    # Expande para o ano se poucos resultados
     if len(candidates) < 3:
-        print(f"   Poucos resultados ({len(candidates)}). Expandindo para {janeiro} → {hoje}...\n")
-        data_ini_ext = pncp_date(janeiro)
-        raw_ext = fetch_pncp(data_ini_ext, data_fim)
-        # Adiciona apenas itens não vistos ainda
-        seen_urls = {build_pncp_url(i) for i in raw_items}
-        raw_items_ext = [i for i in raw_ext if build_pncp_url(i) not in seen_urls]
-        print(f"\n   {len(raw_items_ext)} novos itens da janela expandida\n")
-        candidates.extend(_filter_candidates(raw_items_ext, existing_ids))
+        print(f"   Poucos candidatos PNCP ({len(candidates)}). Expandindo para {janeiro} → {hoje}...\n")
+        pncp_ext = fetch_pncp(pncp_date(janeiro), pncp_date(hoje))
+        seen = {build_pncp_url(i) for i in pncp_raw}
+        novos = [i for i in pncp_ext if build_pncp_url(i) not in seen]
+        print(f"\n   {len(novos)} novos itens da janela expandida\n")
+        candidates.extend(_filter_candidates(novos, existing_ids))
 
-    print(f"2. {len(candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
+    # ------------------------------------------------------------------
+    # 2. Portal da Transparência (federal + ComprasNet)
+    # ------------------------------------------------------------------
+    print(f"2. Portal da Transparência ({dez_dias_atras} → {hoje})...\n")
+    transp_raw = fetch_transparencia(dez_dias_atras, hoje)
 
-    if not candidates:
+    # Deduplicar contra PNCP (mesma URL pode aparecer nas duas fontes)
+    pncp_ids = {licitacao_id(build_pncp_url(i)) for i in pncp_raw}
+    transp_new = [i for i in transp_raw if licitacao_id(build_pncp_url(i)) not in pncp_ids]
+
+    transp_candidates = _filter_candidates(transp_new, existing_ids)
+    print(f"   {len(transp_candidates)} candidatos da Transparência após filtro\n")
+
+    all_candidates = candidates + transp_candidates
+
+    # ------------------------------------------------------------------
+    # 3. Análise Gemini
+    # ------------------------------------------------------------------
+    print(f"3. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
+
+    if not all_candidates:
         print("Nenhuma licitação nova para analisar. Atualizando timestamp...")
         existing_data["last_updated"] = datetime.now(timezone.utc).isoformat()
         save_data(existing_data)
@@ -390,54 +605,58 @@ def run():
 
     new_licitacoes = []
 
-    for i, item in enumerate(candidates):
-        orgao = item.get("orgaoEntidade", {}).get("razaoSocial", "—")
-        objeto_raw = item.get("objetoCompra", "")
-        url = build_pncp_url(item)
+    for i, item in enumerate(all_candidates):
+        fonte    = item.get("_source", "pncp").upper()
+        orgao    = item.get("orgaoEntidade", {}).get("razaoSocial", "—")
+        obj_raw  = item.get("objetoCompra", "")
+        url      = build_pncp_url(item)
 
-        print(f"   [{i+1}/{len(candidates)}] {orgao[:55]}...")
-        print(f"              {objeto_raw[:65]}...")
+        print(f"   [{i+1}/{len(all_candidates)}] [{fonte}] {orgao[:50]}...")
+        print(f"              {obj_raw[:65]}...")
 
         if i > 0:
-            time.sleep(REQUEST_DELAY)
+            time.sleep(GEMINI_DELAY)
 
         try:
             analysis = analyze_with_gemini(item)
 
             if not analysis.get("relevante", False):
-                print("           → Não relevante, ignorando\n")
+                print("           → Não relevante\n")
                 continue
 
             score = analysis.get("score_relevancia", 0)
             if score < 5:
-                print(f"           → Score baixo ({score}/10), ignorando\n")
+                print(f"           → Score baixo ({score}/10)\n")
                 continue
 
-            prazo_raw = (item.get("dataEncerramentoProposta") or
-                         item.get("dataAberturaProposta"))
-            prazo = prazo_raw[:10] if prazo_raw else None
+            prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
+            prazo     = prazo_raw[:10] if prazo_raw else None
 
             licitacao = {
-                "id": licitacao_id(url),
-                "orgao": orgao,
-                "ambito": parse_ambito(item),
-                "objeto": analysis.get("objeto_resumido", objeto_raw[:200]),
-                "modalidade": item.get("modalidadeNome", "Não informada"),
-                "valor_estimado": item.get("valorTotalEstimado"),
-                "prazo_proposta": prazo,
+                "id":              licitacao_id(url),
+                "orgao":           orgao,
+                "ambito":          parse_ambito(item),
+                "objeto":          analysis.get("objeto_resumido", obj_raw[:200]),
+                "modalidade":      item.get("modalidadeNome", "Não informada"),
+                "valor_estimado":  item.get("valorTotalEstimado"),
+                "prazo_proposta":  prazo,
                 "data_publicacao": item.get("dataPublicacaoPncp", hoje.isoformat())[:10],
-                "fonte_url": url,
+                "fonte_url":       url,
+                "fonte":           fonte,
                 "relevance_score": score,
-                "categoria": analysis.get("categoria", "Comunicação Institucional"),
-                "justificativa": analysis.get("justificativa", ""),
+                "categoria":       analysis.get("categoria", "Comunicação Institucional"),
+                "justificativa":   analysis.get("justificativa", ""),
             }
             new_licitacoes.append(licitacao)
             print(f"           → {licitacao['categoria']} | Score: {score}/10\n")
 
-        except (json.JSONDecodeError, KeyError, Exception) as e:
+        except Exception as e:
             print(f"           → Erro: {e}\n")
             continue
 
+    # ------------------------------------------------------------------
+    # 4. Merge, poda e save
+    # ------------------------------------------------------------------
     kept = [
         l for l in existing_data.get("licitacoes", [])
         if l.get("data_publicacao", "") >= cutoff_date
@@ -446,44 +665,20 @@ def run():
     all_licitacoes = new_licitacoes + kept
     all_licitacoes.sort(
         key=lambda l: (l.get("data_publicacao", ""), l.get("relevance_score", 0)),
-        reverse=True
+        reverse=True,
     )
 
-    result = {
+    save_data({
         "last_updated": datetime.now(timezone.utc).isoformat(),
-        "total": len(all_licitacoes),
-        "licitacoes": all_licitacoes,
-    }
-
-    save_data(result)
+        "total":        len(all_licitacoes),
+        "licitacoes":   all_licitacoes,
+    })
 
     print(f"\n{'='*60}")
-    print(f"Concluído! {len(new_licitacoes)} licitações novas adicionadas.")
-    print(f"Total no painel: {len(all_licitacoes)} licitações")
+    print(f"Concluído!")
+    print(f"  Novas:    {len(new_licitacoes)} licitações")
+    print(f"  Total:    {len(all_licitacoes)} no painel")
     print(f"{'='*60}\n")
-
-
-def _filter_candidates(raw_items: list, existing_ids: set) -> list:
-    """Aplica pré-filtro de keyword + valor + prazo + deduplicação."""
-    hoje_iso = date.today().isoformat()
-    candidates = []
-    for item in raw_items:
-        objeto = item.get("objetoCompra", "")
-        url = build_pncp_url(item)
-        lid = licitacao_id(url)
-        if lid in existing_ids:
-            continue
-        if not keyword_match(objeto):
-            continue
-        valor = item.get("valorTotalEstimado")
-        if valor is not None and float(valor) < MIN_VALOR:
-            continue
-        # Excluir licitações com prazo de proposta já vencido
-        prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
-        if prazo_raw and prazo_raw[:10] < hoje_iso:
-            continue
-        candidates.append(item)
-    return candidates
 
 
 if __name__ == "__main__":
