@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # ---------------------------------------------------------------------------
 # Constantes
@@ -316,52 +316,50 @@ def transparencia_date(d: date) -> str:
 
 def normalize_transparencia_item(item: dict) -> dict:
     """
-    Converte um item do Portal da Transparência para o formato interno
-    compatível com as funções existentes (parse_ambito, build_pncp_url, etc.).
-    Múltiplos fallbacks para lidar com variações de schema da API.
+    Converte um item do Portal da Transparência (schema real) para o formato
+    interno compatível com as demais funções do script.
+
+    Schema real da API (LicitacaoDTO):
+      item.licitacao.objeto        → descrição do objeto
+      item.unidadeGestora.nome     → nome do órgão
+      item.modalidadeLicitacao     → modalidade (string direta)
+      item.valor                   → valor estimado
+      item.dataPublicacao          → data publicação (YYYY-MM-DD)
+      item.dataAbertura            → data abertura/prazo (YYYY-MM-DD)
+      item.municipio.uf.sigla      → UF
+      item.municipio.nomeIBGE      → nome do município
+      item.id                      → ID para montar URL
     """
     # Órgão
     orgao_nome = (
         item.get("unidadeGestora", {}).get("nome") or
-        item.get("unidadeGestora", {}).get("descricao") or
-        item.get("orgaoSuperior", {}).get("nome") or
-        item.get("orgao", {}).get("nome") or
+        item.get("unidadeGestora", {}).get("orgaoVinculado", {}).get("nome") or
+        item.get("unidadeGestora", {}).get("orgaoMaximo", {}).get("nome") or
         "Órgão não informado"
     )
 
     # UF e município
-    uf        = item.get("municipio", {}).get("uf", "")
-    municipio = item.get("municipio", {}).get("nome", "")
+    municipio_obj = item.get("municipio") or {}
+    uf_obj        = municipio_obj.get("uf") or {}
+    uf            = uf_obj.get("sigla", "") if isinstance(uf_obj, dict) else str(uf_obj)
+    municipio     = municipio_obj.get("nomeIBGE", "") or municipio_obj.get("nome", "")
 
-    # Objeto
-    objeto = item.get("objeto") or item.get("descricao") or ""
+    # Objeto — está dentro do subobjeto licitacao
+    licitacao_obj = item.get("licitacao") or {}
+    objeto = licitacao_obj.get("objeto") or item.get("objeto") or item.get("descricao") or ""
 
-    # Modalidade
-    modalidade = (
-        item.get("modalidade", {}).get("descricao") or
-        item.get("tipo", {}).get("descricao") or
-        "Não informada"
-    )
+    # Modalidade — campo direto
+    modalidade = item.get("modalidadeLicitacao") or "Não informada"
 
     # Valor
-    valor = (
-        item.get("valor") or
-        item.get("valorEstimado") or
-        item.get("valorTotal") or
-        item.get("valorContrato")
-    )
+    valor = item.get("valor") or item.get("valorEstimado") or item.get("valorTotal")
 
-    # Datas
-    data_pub = _iso_from_br(
-        item.get("dataPublicacao") or item.get("dataAbertura") or ""
-    )
-    prazo = _iso_from_br(
-        item.get("dataEncerramentoProposta") or
-        item.get("dataAberturaProposta") or ""
-    )
+    # Datas já em formato ISO (YYYY-MM-DD) ou com hora — pegar só os 10 primeiros chars
+    data_pub = (item.get("dataPublicacao") or "")[:10]
+    prazo    = (item.get("dataAbertura") or item.get("dataEncerramentoProposta") or "")[:10]
 
     # URL direta no Portal da Transparência
-    item_id  = item.get("id") or item.get("numero") or ""
+    item_id   = item.get("id") or licitacao_obj.get("numero") or ""
     fonte_url = (
         f"https://portaldatransparencia.gov.br/licitacoes/{item_id}"
         if item_id else "https://portaldatransparencia.gov.br/licitacoes"
@@ -370,21 +368,21 @@ def normalize_transparencia_item(item: dict) -> dict:
     return {
         "_source": "transparencia",
         "orgaoEntidade": {
-            "razaoSocial":  orgao_nome,
-            "esferaNome":   "Federal",   # Transparência cobre apenas federal
-            "ufSigla":      uf,
+            "razaoSocial":   orgao_nome,
+            "esferaNome":    "Federal",   # Transparência cobre apenas federal
+            "ufSigla":       uf,
             "municipioNome": municipio,
         },
         "unidadeOrgao": {
-            "ufSigla":      uf,
+            "ufSigla":       uf,
             "municipioNome": municipio,
         },
-        "objetoCompra":           objeto,
-        "modalidadeNome":         modalidade,
-        "valorTotalEstimado":     float(valor) if valor else None,
-        "dataPublicacaoPncp":     data_pub,
+        "objetoCompra":            objeto,
+        "modalidadeNome":          modalidade,
+        "valorTotalEstimado":      float(valor) if valor else None,
+        "dataPublicacaoPncp":      data_pub,
         "dataEncerramentoProposta": prazo or None,
-        "linkSistemaOrigem":      fonte_url,
+        "linkSistemaOrigem":       fonte_url,
     }
 
 
@@ -423,6 +421,10 @@ def fetch_transparencia(data_ini: date, data_fim: date) -> list:
         try:
             resp = requests.get(TRANSPARENCIA_BASE, params=params, headers=headers, timeout=30)
 
+            if resp.status_code == 400:
+                print("   API da Transparência retornou 400 — parâmetros inválidos.")
+                print(f"   Detalhe: {resp.text[:200]}")
+                break
             if resp.status_code == 401:
                 print("   Chave da API da Transparência inválida ou expirada.")
                 break
@@ -440,10 +442,11 @@ def fetch_transparencia(data_ini: date, data_fim: date) -> list:
             print(f"   Erro Transparência pág {pagina}: {e}")
             break
 
-        # A API pode retornar lista direta ou objeto paginado
+        # A API retorna lista direta (array de LicitacaoDTO)
         if isinstance(data, list):
             items = data
         elif isinstance(data, dict):
+            # fallback: alguns wrappers de API encapsulam em objeto
             items = data.get("data", data.get("content", data.get("items", [])))
             total_reg = data.get("totalRegistros", data.get("total", 0))
             if total_reg and TRANSPARENCIA_PAGE_SIZE:
