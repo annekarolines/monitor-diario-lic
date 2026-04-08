@@ -1,7 +1,22 @@
 {
-  "last_updated": "2026-04-07T12:06:05.275002+00:00",
-  "total": 21,
+  "last_updated": "2026-04-08T12:08:01.477413+00:00",
+  "total": 22,
   "licitacoes": [
+    {
+      "id": "574ba42d4b2bfe7771ef92e2356a38db",
+      "orgao": "PORTO MURTINHO CAMARA MUNICIPAL",
+      "ambito": "Municipal – Porto Murtinho/MS",
+      "objeto": "Contratação de agência de publicidade para prestação de serviços completos de comunicação. Inclui planejamento, criação e execução de campanhas publicitárias para a Câmara Municipal.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 300000.0,
+      "prazo_proposta": "2026-05-21",
+      "data_publicacao": "2026-04-06",
+      "fonte_url": "https://pncp.gov.br/app/editais/03667466000133/2026/4",
+      "fonte": "PNCP",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O valor estimado é robusto para um órgão municipal e o escopo abrange todas as etapas da comunicação publicitária, sendo uma oportunidade estratégica."
+    },
     {
       "id": "512f663c153299069e797a70975b0bbd",
       "orgao": "SAO GONCALO DOS CAMPOS CAMARA MUNICIPAL",
