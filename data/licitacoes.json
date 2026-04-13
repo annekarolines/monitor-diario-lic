@@ -1,12 +1,27 @@
 {
-  "last_updated": "2026-04-13T12:11:19.972656+00:00",
-  "total": 22,
+  "last_updated": "2026-04-07T21:46:01.605921+00:00",
+  "total": 24,
   "licitacoes": [
+    {
+      "id": "5af0b07ad5695d3df0ea4c7b29df3444",
+      "orgao": "MUNICIPIO DE BELO HORIZONTE",
+      "ambito": "Municipal – Belo Horizonte/MG",
+      "objeto": "Contratação de agência para prestação de serviços completos de publicidade, incluindo planejamento, criação e execução, para a Administração Direta do Município de Belo Horizonte e suas entidades.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 55000000.0,
+      "prazo_proposta": "2026-06-01",
+      "data_publicacao": "2026-04-07",
+      "fonte_url": "https://pncp.gov.br/app/editais/18715383000140/2026/215",
+      "fonte": "PNCP",
+      "relevance_score": 10,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Esta é uma oportunidade estratégica de grande porte, com valor expressivo e escopo abrangente em publicidade para um órgão público relevante."
+    },
     {
       "id": "574ba42d4b2bfe7771ef92e2356a38db",
       "orgao": "PORTO MURTINHO CAMARA MUNICIPAL",
       "ambito": "Municipal – Porto Murtinho/MS",
-      "objeto": "Contratação de agência de publicidade para prestação de serviços completos de comunicação. Inclui planejamento, criação e execução de campanhas publicitárias para a Câmara Municipal.",
+      "objeto": "Contratação de agência para serviços completos de publicidade, abrangendo planejamento, criação e execução de campanhas para a Câmara Municipal.",
       "modalidade": "Concorrência - Presencial",
       "valor_estimado": 300000.0,
       "prazo_proposta": "2026-05-21",
@@ -15,7 +30,7 @@
       "fonte": "PNCP",
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
-      "justificativa": "O valor estimado é robusto para um órgão municipal e o escopo abrange todas as etapas da comunicação publicitária, sendo uma oportunidade estratégica."
+      "justificativa": "O valor estimado e o escopo abrangente de publicidade tornam esta uma oportunidade estratégica para agências de comunicação."
     },
     {
       "id": "512f663c153299069e797a70975b0bbd",
@@ -30,6 +45,21 @@
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "Esta é uma oportunidade estratégica devido ao valor expressivo e ao escopo abrangente de publicidade institucional para um órgão público."
+    },
+    {
+      "id": "8004f9a104d4087c24b063dab0201ba2",
+      "orgao": "CONSELHO DE ARQUITETURA E URBANISMO DO RIO GRANDE DO SUL",
+      "ambito": "Municipal – Porto Alegre/RS",
+      "objeto": "Contratação de agência para serviços de publicidade, incluindo criação e divulgação de campanhas e programas de interesse público do CAU/RS.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 900000.0,
+      "prazo_proposta": "2026-05-27",
+      "data_publicacao": "2026-03-31",
+      "fonte_url": "https://pncp.gov.br/app/editais/14840270000115/2026/2",
+      "fonte": "PNCP",
+      "relevance_score": 9,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O alto valor estimado e o escopo amplo em publicidade e seus desdobramentos tornam esta uma oportunidade estratégica para agências de comunicação."
     },
     {
       "id": "f052c1d9d657928cf3df1b8ddcc755aa",

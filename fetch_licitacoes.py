@@ -4,6 +4,7 @@ Licitações de Comunicação — Coleta diária
 Fontes:
   1. PNCP  — Portal Nacional de Contratações Públicas (pncp.gov.br)
   2. Portal da Transparência — api.portaldatransparencia.gov.br
+  3. DOU   — Diário Oficial da União, Seção 3 (in.gov.br)
 
 Limites Portal da Transparência:
   - 00h-06h BRT: 700 req/min
@@ -23,6 +24,7 @@ import requests
 import google.generativeai as genai
 from datetime import datetime, timedelta, timezone, date
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -48,6 +50,22 @@ MODALIDADES = [4, 5, 6, 7, 8, 9, 3]
 TRANSPARENCIA_BASE      = "https://api.portaldatransparencia.gov.br/api-de-dados/licitacoes"
 TRANSPARENCIA_PAGE_SIZE = 500   # máximo aceito pela API
 TRANSPARENCIA_RPM       = 120   # conservador: abaixo do limite de 180 (APIs restritas)
+
+# DOU — Diário Oficial da União
+DOU_BASE = "https://www.in.gov.br/leiturajornal"
+# artType values que indicam licitação/edital no DO3
+DOU_ART_TYPES = {
+    "aviso de licitação",
+    "aviso de licitação pública",
+    "aviso de pregão eletrônico",
+    "aviso de pregão presencial",
+    "aviso de concorrência",
+    "aviso de dispensa eletrônica",
+    "aviso de dispensa de licitação",
+    "aviso de chamamento público",
+    "aviso de inexigibilidade",
+    "aviso",
+}
 
 DATA_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "licitacoes.json")
@@ -86,6 +104,10 @@ EXCLUDE_KEYWORDS = [
     "radiocomunicacao",
     "sistema de comunicacao de dados",
     "sistema de comunicação de dados",
+    "ato de concentracao",
+    "ato de concentração",
+    "da-se publicidade ao seguinte ato",
+    "dá-se publicidade ao seguinte ato",
 ]
 
 # ---------------------------------------------------------------------------
@@ -470,6 +492,276 @@ def fetch_transparencia(data_ini: date, data_fim: date) -> list:
 
 
 # ---------------------------------------------------------------------------
+# DOU — Diário Oficial da União, Seção 3
+# ---------------------------------------------------------------------------
+
+def dou_date(d: date) -> str:
+    """Converte date para 'DD-MM-YYYY' exigido pela URL do leiturajornal."""
+    return d.strftime("%d-%m-%Y")
+
+
+def _extract_valor_dou(text: str):
+    """Tenta extrair valor monetário do texto do DOU. Retorna float ou None."""
+    if not text:
+        return None
+    # Padrões: R$ 1.500.000,00 | R$1500000.00 | 1.500.000,00 (R$) | valor global de R$ ...
+    patterns = [
+        r"R\$\s*([\d\.]+,\d{2})",
+        r"valor[^\d]{0,30}([\d\.]+,\d{2})",
+        r"([\d\.]+,\d{2})\s*\(R\$",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.IGNORECASE)
+        if m:
+            raw = m.group(1).replace(".", "").replace(",", ".")
+            try:
+                v = float(raw)
+                if v >= MIN_VALOR:
+                    return v
+            except ValueError:
+                pass
+    return None
+
+
+def normalize_dou_item(item: dict) -> dict:
+    """
+    Converte um item do DOU (leiturajornal JSON) para o formato interno.
+
+    Campos relevantes do JSON embutido:
+      item.pubName       → nome da publicação (ex: "DO3")
+      item.urlTitle      → slug para montar URL do artigo
+      item.titulo        → título/cabeçalho (geralmente nome do órgão)
+      item.title         → título alternativo
+      item.pubDate       → data de publicação (YYYY-MM-DD ou DD/MM/YYYY)
+      item.content       → corpo do artigo (texto do edital/aviso)
+      item.artType       → tipo de artigo (ex: "Aviso de Licitação")
+      item.hierarchyStr  → hierarquia "Ministério > Secretaria > ..."
+      item.hierarchyList → lista de níveis hierárquicos
+      item.editionNumber → número da edição
+    """
+    titulo       = item.get("titulo", "") or ""
+    title        = item.get("title", "") or ""
+    content      = item.get("content", "") or ""
+    art_type     = item.get("artType", "") or ""
+    hierarchy    = item.get("hierarchyStr", "") or ""
+    url_title    = item.get("urlTitle", "") or ""
+    pub_date_raw = item.get("pubDate", "") or ""
+
+    # Órgão: hierarquia → preferencialmente 2º nível (mais específico que o ministério,
+    # mais reconhecível que a sub-unidade). Ex: "Min. Fazenda/Caixa Econômica Federal/..." → "Caixa Econômica Federal"
+    hierarchy_parts = [p.strip() for p in re.split(r"[/>\|]", hierarchy) if p.strip()]
+    if len(hierarchy_parts) >= 2:
+        orgao = hierarchy_parts[1]          # 2º nível (ex: Caixa Econômica Federal)
+    elif hierarchy_parts:
+        orgao = hierarchy_parts[0]          # Apenas 1 nível (ex: Prefeituras)
+    else:
+        orgao = titulo.split("\n")[0].strip() or "DOU"
+
+    # Objeto: combina título + início do conteúdo
+    # Remove tags HTML do content
+    content_clean = re.sub(r"<[^>]+>", " ", content).strip()
+    content_clean = re.sub(r"\s+", " ", content_clean)
+    objeto = f"{titulo} — {content_clean[:300]}" if titulo else content_clean[:300]
+
+    # Data: normaliza para ISO
+    if pub_date_raw:
+        if "/" in pub_date_raw[:5]:
+            parts = pub_date_raw[:10].split("/")
+            if len(parts) == 3:
+                pub_date = f"{parts[2]}-{parts[1]}-{parts[0]}"
+            else:
+                pub_date = pub_date_raw[:10]
+        else:
+            pub_date = pub_date_raw[:10]
+    else:
+        pub_date = date.today().isoformat()
+
+    # Valor estimado (tenta extrair do texto)
+    valor = _extract_valor_dou(content_clean)
+
+    # Modalidade derivada do artType
+    modalidade = art_type if art_type else "Aviso DOU"
+
+    # URL do artigo no DOU
+    if url_title:
+        fonte_url = f"https://www.in.gov.br/en/web/dou/-/{url_title}"
+    else:
+        fonte_url = f"https://www.in.gov.br/leiturajornal?data={dou_date(date.today())}&secao=do3"
+
+    # Âmbito: DOU Seção 3 = federal
+    esfera = "Federal"
+    # Tenta identificar UF da hierarquia
+    uf_match = re.search(r"\b([A-Z]{2})\b", hierarchy)
+    uf = uf_match.group(1) if uf_match else ""
+
+    return {
+        "_source": "dou",
+        "orgaoEntidade": {
+            "razaoSocial": orgao,
+            "esferaNome":  esfera,
+            "ufSigla":     uf,
+            "municipioNome": "",
+        },
+        "unidadeOrgao": {
+            "ufSigla":      uf,
+            "municipioNome": "",
+        },
+        "objetoCompra":             objeto,
+        "modalidadeNome":           modalidade,
+        "valorTotalEstimado":       valor,
+        "dataPublicacaoPncp":       pub_date,
+        "dataEncerramentoProposta": None,
+        "linkSistemaOrigem":        fonte_url,
+        "_dou_art_type":            art_type,
+        "_dou_content_full":        content_clean[:2000],
+    }
+
+
+def _is_relevant_dou_type(art_type: str) -> bool:
+    """Retorna True se o artType do DOU indica um aviso/edital de licitação."""
+    norm = normalize_text(art_type)
+    # Verifica contra lista conhecida
+    if norm in {normalize_text(t) for t in DOU_ART_TYPES}:
+        return True
+    # Cobre variantes como "Aviso de Licitação-Pregão", "Aviso de Licitação-Concorrência"
+    licitacao_terms = [
+        "licitacao", "pregao", "concorrencia", "dispensa",
+        "inexigibilidade", "chamamento", "credenciamento",
+    ]
+    return any(t in norm for t in licitacao_terms)
+
+
+def _parse_dou_json_from_html(html: str) -> list:
+    """
+    Extrai os objetos JSON da página leiturajornal do DOU.
+
+    A página embute os dados em uma tag <script> (sem atributo type) como
+    um objeto JSON com a chave "jsonArray":
+      {"typeNormDay":{...},"section":"DO3","jsonArray":[{...},...]}
+
+    Isso cobre > 99% dos casos. Fallbacks alternativos caso o layout mude.
+    """
+    soup = BeautifulSoup(html, "lxml")
+
+    # Estratégia principal: script tag contendo "jsonArray":[ e "section":"DO3"
+    for tag in soup.find_all("script"):
+        text = tag.string or ""
+        if '"jsonArray":[' in text and '"section":"DO' in text:
+            try:
+                data = json.loads(text.strip())
+                items = data.get("jsonArray", [])
+                if items:
+                    print(f"   DOU: {len(items)} itens extraídos do jsonArray")
+                    return items
+            except json.JSONDecodeError:
+                pass
+
+    # Fallback: procura o padrão jsonArray diretamente via regex
+    m = re.search(r'"jsonArray"\s*:\s*(\[.*?\])\s*[,}]', html, re.DOTALL)
+    if m:
+        try:
+            items = json.loads(m.group(1))
+            print(f"   DOU: {len(items)} itens via regex fallback")
+            return items
+        except json.JSONDecodeError:
+            pass
+
+    print("   DOU: não foi possível extrair JSON embutido da página.")
+    return []
+
+
+def _make_dou_session() -> requests.Session:
+    """Cria sessão HTTP com cookies do portal in.gov.br (necessário para leiturajornal)."""
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    })
+    try:
+        session.get("https://www.in.gov.br/", timeout=30)
+    except Exception:
+        pass  # Continua mesmo sem estabelecer sessão inicial
+    return session
+
+
+def fetch_dou(data_ini: date, data_fim: date) -> list:
+    """
+    Busca licitações no DOU Seção 3 para o intervalo de datas.
+    Usa leiturajornal (não requer autenticação).
+    Retorna lista de itens já normalizados para o formato interno.
+    """
+    session = _make_dou_session()
+    all_normalized: list = []
+    current = data_ini
+
+    while current <= data_fim:
+        date_str = dou_date(current)
+        url = f"{DOU_BASE}?data={date_str}&secao=do3"
+        print(f"   DOU: buscando {date_str}...")
+
+        try:
+            resp = session.get(url, timeout=60)
+            if resp.status_code == 404:
+                print(f"   DOU: {date_str} sem edição (fim de semana/feriado)")
+                current += timedelta(days=1)
+                continue
+            if resp.status_code != 200:
+                print(f"   DOU: HTTP {resp.status_code} para {date_str}")
+                current += timedelta(days=1)
+                continue
+        except Exception as e:
+            print(f"   DOU: erro ao buscar {date_str}: {e}")
+            current += timedelta(days=1)
+            continue
+
+        html = resp.text
+        items = _parse_dou_json_from_html(html)
+
+        if not items:
+            print(f"   DOU: {date_str} — {len(html)//1024}KB carregados, JSON não extraído")
+            current += timedelta(days=1)
+            continue
+
+        # Filtra apenas artTypes relacionados a licitação + keyword match
+        relevant = []
+        for it in items:
+            art_type = it.get("artType", "") or ""
+            if not _is_relevant_dou_type(art_type):
+                continue
+            texto = " ".join([
+                it.get("titulo", "") or "",
+                it.get("title", "") or "",
+                it.get("content", "") or "",
+                it.get("hierarchyStr", "") or "",
+            ])
+            if keyword_match(texto):
+                relevant.append(it)
+
+        # Para log: contar só itens de licitação (sem filtro keyword)
+        licit_count = sum(1 for it in items if _is_relevant_dou_type(it.get("artType", "")))
+        print(f"   DOU: {date_str} — {licit_count} avisos de licitação; "
+              f"{len(relevant)} relevantes por keyword")
+
+        normalized = [normalize_dou_item(i) for i in relevant]
+        all_normalized.extend(normalized)
+
+        if current < data_fim:
+            time.sleep(2)
+        current += timedelta(days=1)
+
+    print(f"   Total DOU: {len(all_normalized)} licitações brutas")
+    return all_normalized
+
+
+# ---------------------------------------------------------------------------
 # Gemini
 # ---------------------------------------------------------------------------
 
@@ -595,12 +887,25 @@ def run():
     transp_candidates = _filter_candidates(transp_new, existing_ids)
     print(f"   {len(transp_candidates)} candidatos da Transparência após filtro\n")
 
-    all_candidates = candidates + transp_candidates
+    # ------------------------------------------------------------------
+    # 3. DOU — Diário Oficial da União, Seção 3
+    # ------------------------------------------------------------------
+    print(f"3. DOU Seção 3 ({dez_dias_atras} → {hoje})...\n")
+    dou_raw = fetch_dou(dez_dias_atras, hoje)
+
+    # Deduplicar contra PNCP e Transparência
+    known_ids = pncp_ids | {licitacao_id(build_pncp_url(i)) for i in transp_raw}
+    dou_new = [i for i in dou_raw if licitacao_id(build_pncp_url(i)) not in known_ids]
+
+    dou_candidates = _filter_candidates(dou_new, existing_ids)
+    print(f"   {len(dou_candidates)} candidatos do DOU após filtro\n")
+
+    all_candidates = candidates + transp_candidates + dou_candidates
 
     # ------------------------------------------------------------------
-    # 3. Análise Gemini
+    # 4. Análise Gemini
     # ------------------------------------------------------------------
-    print(f"3. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
+    print(f"4. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
 
     if not all_candidates:
         print("Nenhuma licitação nova para analisar. Atualizando timestamp...")
@@ -660,7 +965,7 @@ def run():
             continue
 
     # ------------------------------------------------------------------
-    # 4. Merge, poda e save
+    # 5. Merge, poda e save
     # ------------------------------------------------------------------
     kept = [
         l for l in existing_data.get("licitacoes", [])
