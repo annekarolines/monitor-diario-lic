@@ -5,6 +5,7 @@ Fontes:
   1. PNCP  — Portal Nacional de Contratações Públicas (pncp.gov.br)
   2. Portal da Transparência — api.portaldatransparencia.gov.br
   3. DOU   — Diário Oficial da União, Seção 3 (in.gov.br)
+  4. QD    — Querido Diário, diários oficiais municipais (queridodiario.ok.org.br)
 
 Limites Portal da Transparência:
   - 00h-06h BRT: 700 req/min
@@ -35,10 +36,11 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # Constantes
 # ---------------------------------------------------------------------------
 
-GEMINI_DELAY  = 5        # segundos entre chamadas Gemini (free tier: 20 RPM)
-MIN_VALOR     = 10_000.0
-MAX_AGE_DAYS  = 30
-PAGE_SIZE     = 50       # máximo PNCP
+GEMINI_DELAY         = 5    # segundos entre chamadas Gemini (free tier: 20 RPM)
+GEMINI_MAX_CANDIDATES = 30  # cap total de análises por run (protege cota)
+MIN_VALOR            = 10_000.0
+MAX_AGE_DAYS         = 30
+PAGE_SIZE            = 50   # máximo PNCP
 
 # PNCP
 PNCP_BASE = "https://pncp.gov.br/pncp-consulta/v1/contratacoes/publicacao"
@@ -66,6 +68,33 @@ DOU_ART_TYPES = {
     "aviso de inexigibilidade",
     "aviso",
 }
+
+# Querido Diário — diários oficiais municipais
+QD_BASE                  = "https://api.queridodiario.ok.org.br/gazettes"
+QD_PAGE_SIZE             = 50
+QD_EXCERPT_SIZE          = 800
+QD_NUMBER_OF_EXCERPTS    = 3
+QD_MAX_RESULTS_PER_CLUSTER = 200   # cap: 4 páginas de 50 por cluster
+
+# 3 clusters temáticos para cobrir os KEYWORDS sem URL excessivamente longa
+QD_QUERY_CLUSTERS = [
+    (
+        '"agência de publicidade" OR "agencia de publicidade"'
+        ' OR "agência de propaganda" OR "agencia de propaganda"'
+        ' OR publicidade OR propaganda'
+    ),
+    (
+        '"marketing digital" OR "redes sociais" OR "mídias sociais"'
+        ' OR "midias sociais" OR "comunicação digital" OR "comunicacao digital"'
+        ' OR "gestão de redes" OR "gestao de redes"'
+    ),
+    (
+        '"campanha publicitária" OR "campanha publicitaria"'
+        ' OR "identidade visual" OR "conteúdo digital" OR "conteudo digital"'
+        ' OR "publicidade institucional" OR "comunicação institucional"'
+        ' OR "comunicacao institucional"'
+    ),
+]
 
 DATA_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "licitacoes.json")
@@ -762,6 +791,171 @@ def fetch_dou(data_ini: date, data_fim: date) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Querido Diário — Diários Oficiais Municipais
+# ---------------------------------------------------------------------------
+
+def normalize_querido_diario_item(gazette: dict) -> dict:
+    """
+    Converte um gazette do Querido Diário para o formato interno.
+
+    Campos da API:
+      gazette.territory_id    → ID IBGE do município
+      gazette.territory_name  → nome do município
+      gazette.state_code      → sigla do estado (ex: "SP")
+      gazette.date            → data de publicação (YYYY-MM-DD)
+      gazette.url             → URL canônica no QD
+      gazette.excerpts        → lista de trechos extraídos pelo Elasticsearch
+    """
+    territory_name = gazette.get("territory_name", "") or ""
+    state_code     = gazette.get("state_code", "") or ""
+    pub_date       = (gazette.get("date", "") or date.today().isoformat())[:10]
+    fonte_url      = gazette.get("url", "") or ""
+    territory_id   = gazette.get("territory_id", "") or ""
+    excerpts       = gazette.get("excerpts", []) or []
+
+    # Objeto: concatena trechos separados por " [...] "
+    objeto = " [...] ".join(e.strip() for e in excerpts if e and e.strip())
+    if not objeto:
+        objeto = f"Diário Oficial de {territory_name} — sem trecho extraído"
+
+    # Órgão: QD não identifica o órgão emitente, usa nome do município
+    orgao_nome = territory_name or "Município não informado"
+
+    # Valor: extrai do texto dos trechos
+    valor = _extract_valor_dou(objeto)
+
+    # Modalidade: tenta extrair dos trechos via regex
+    modalidade = "Aviso de Licitação"
+    modalidade_patterns = [
+        (r"pregão eletrônico|pregão eletronico|pregao eletronico", "Pregão Eletrônico"),
+        (r"pregão presencial|pregao presencial",                   "Pregão Presencial"),
+        (r"concorrência|concorrencia",                             "Concorrência"),
+        (r"dispensa de licitaç|dispensa de licitac",               "Dispensa de Licitação"),
+        (r"inexigibilidade",                                       "Inexigibilidade"),
+        (r"chamamento público|chamamento publico",                 "Chamamento Público"),
+        (r"credenciamento",                                        "Credenciamento"),
+    ]
+    objeto_lower = objeto.lower()
+    for pattern, nome in modalidade_patterns:
+        if re.search(pattern, objeto_lower):
+            modalidade = nome
+            break
+
+    # Fonte fallback quando url está vazia (evita colisão de MD5)
+    if not fonte_url and territory_id and pub_date:
+        fonte_url = f"https://queridodiario.ok.org.br/{territory_id}/{pub_date}"
+
+    return {
+        "_source": "qd",
+        "orgaoEntidade": {
+            "razaoSocial":   orgao_nome,
+            "esferaNome":    "Municipal",
+            "ufSigla":       state_code,
+            "municipioNome": territory_name,
+        },
+        "unidadeOrgao": {
+            "ufSigla":       state_code,
+            "municipioNome": territory_name,
+        },
+        "objetoCompra":             objeto,
+        "modalidadeNome":           modalidade,
+        "valorTotalEstimado":       valor,
+        "dataPublicacaoPncp":       pub_date,
+        "dataEncerramentoProposta": None,
+        "linkSistemaOrigem":        fonte_url,
+        "_qd_territory_id":         territory_id,
+    }
+
+
+def fetch_querido_diario(data_ini: date, data_fim: date) -> list:
+    """
+    Busca licitações nos diários oficiais municipais via API do Querido Diário.
+    Executa 3 clusters de query para cobrir os KEYWORDS sem URL excessivamente longa.
+    Retorna lista de itens normalizados para o formato interno.
+    """
+    seen_urls:   set  = set()
+    all_gazettes: list = []
+
+    print(f"   Buscando Querido Diário ({data_ini} → {data_fim})...")
+
+    for cluster_idx, query in enumerate(QD_QUERY_CLUSTERS, 1):
+        print(f"   QD cluster {cluster_idx}/{len(QD_QUERY_CLUSTERS)}: "
+              f"{query[:70].rstrip()}...")
+        offset        = 0
+        cluster_total = None
+
+        while True:
+            params = {
+                "querystring":        query,
+                "published_since":    data_ini.isoformat(),
+                "published_until":    data_fim.isoformat(),
+                "size":               QD_PAGE_SIZE,
+                "offset":             offset,
+                "sort_by":            "relevance",
+                "excerpt_size":       QD_EXCERPT_SIZE,
+                "number_of_excerpts": QD_NUMBER_OF_EXCERPTS,
+            }
+
+            try:
+                resp = requests.get(QD_BASE, params=params, timeout=30)
+
+                if resp.status_code == 429:
+                    print("   QD: rate limit — aguardando 60s...")
+                    time.sleep(60)
+                    continue
+                if resp.status_code in (502, 503):
+                    print(f"   QD: serviço indisponível (HTTP {resp.status_code})")
+                    break
+                if resp.status_code == 400:
+                    print(f"   QD: query inválida (HTTP 400): {resp.text[:200]}")
+                    break
+                resp.raise_for_status()
+                payload = resp.json()
+
+            except Exception as e:
+                print(f"   QD: erro cluster {cluster_idx} offset {offset}: {e}")
+                break
+
+            gazettes = payload.get("gazettes", [])
+
+            if cluster_total is None:
+                cluster_total = payload.get("total_gazettes", 0)
+                print(f"   QD cluster {cluster_idx}: {cluster_total} gazettes encontradas")
+
+            if not gazettes:
+                break
+
+            for gazette in gazettes:
+                url = gazette.get("url", "")
+                if url and url not in seen_urls:
+                    seen_urls.add(url)
+                    all_gazettes.append(gazette)
+
+            offset += QD_PAGE_SIZE
+            fetched_so_far = offset
+            cap = min(cluster_total or 0, QD_MAX_RESULTS_PER_CLUSTER)
+            if fetched_so_far >= cap or len(gazettes) < QD_PAGE_SIZE:
+                break
+
+            time.sleep(1)  # rate limit gentil entre páginas
+
+        if cluster_idx < len(QD_QUERY_CLUSTERS):
+            time.sleep(2)  # pausa entre clusters
+
+    print(f"   QD: {len(all_gazettes)} gazettes únicas coletadas")
+
+    # Normaliza e aplica keyword_match (excerto pode conter o termo fora de contexto)
+    normalized = []
+    for g in all_gazettes:
+        item = normalize_querido_diario_item(g)
+        if keyword_match(item.get("objetoCompra", "")):
+            normalized.append(item)
+
+    print(f"   Total QD: {len(normalized)} licitações brutas após keyword match")
+    return normalized
+
+
+# ---------------------------------------------------------------------------
 # Gemini
 # ---------------------------------------------------------------------------
 
@@ -900,12 +1094,44 @@ def run():
     dou_candidates = _filter_candidates(dou_new, existing_ids)
     print(f"   {len(dou_candidates)} candidatos do DOU após filtro\n")
 
-    all_candidates = candidates + transp_candidates + dou_candidates
+    # ------------------------------------------------------------------
+    # 4. Querido Diário — Diários Oficiais Municipais
+    # ------------------------------------------------------------------
+    print(f"4. Querido Diário ({dez_dias_atras} → {hoje})...\n")
+    qd_raw = fetch_querido_diario(dez_dias_atras, hoje)
+
+    # Deduplicar contra fontes anteriores por URL/ID
+    known_ids_all = known_ids | {licitacao_id(build_pncp_url(i)) for i in dou_raw}
+    qd_new = [i for i in qd_raw
+              if licitacao_id(build_pncp_url(i)) not in known_ids_all]
+
+    # Deduplicar por objeto (fuzzy) — captura o mesmo edital vindo de outra fonte
+    existing_objetos = {
+        normalize_text(c.get("objetoCompra", ""))[:100]
+        for c in candidates + transp_candidates + dou_candidates
+    }
+    qd_new = [i for i in qd_new
+              if normalize_text(i.get("objetoCompra", ""))[:100] not in existing_objetos]
+
+    qd_candidates = _filter_candidates(qd_new, existing_ids)
+    print(f"   {len(qd_candidates)} candidatos do Querido Diário após filtro\n")
+
+    all_candidates = candidates + transp_candidates + dou_candidates + qd_candidates
 
     # ------------------------------------------------------------------
-    # 4. Análise Gemini
+    # 5. Análise Gemini
     # ------------------------------------------------------------------
-    print(f"4. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
+    # Cap: prioriza fontes com dados mais estruturados (PNCP > DOU > QD)
+    if len(all_candidates) > GEMINI_MAX_CANDIDATES:
+        SOURCE_PRIORITY = {"pncp": 0, "transparencia": 1, "dou": 2, "qd": 3}
+        all_candidates.sort(
+            key=lambda x: SOURCE_PRIORITY.get(x.get("_source", "pncp").lower(), 9)
+        )
+        print(f"   Cap aplicado: {len(all_candidates)} → {GEMINI_MAX_CANDIDATES} candidatos "
+              f"(prioridade: PNCP > DOU > QD)\n")
+        all_candidates = all_candidates[:GEMINI_MAX_CANDIDATES]
+
+    print(f"5. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
 
     if not all_candidates:
         print("Nenhuma licitação nova para analisar. Atualizando timestamp...")
@@ -935,7 +1161,9 @@ def run():
                 continue
 
             score = analysis.get("score_relevancia", 0)
-            if score < 5:
+            # QD tende a não ter valor estimado → threshold levemente menor
+            min_score = 4 if fonte == "QD" else 5
+            if score < min_score:
                 print(f"           → Score baixo ({score}/10)\n")
                 continue
 
@@ -965,7 +1193,7 @@ def run():
             continue
 
     # ------------------------------------------------------------------
-    # 5. Merge, poda e save
+    # 6. Merge, poda e save
     # ------------------------------------------------------------------
     kept = [
         l for l in existing_data.get("licitacoes", [])
