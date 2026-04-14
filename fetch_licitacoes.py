@@ -96,6 +96,21 @@ QD_QUERY_CLUSTERS = [
     ),
 ]
 
+# DODF — Diário Oficial do Distrito Federal
+DODF_BASE         = "https://dodf.df.gov.br/dodf/jornal/diario"
+DODF_MATERIA_URL  = "https://dodf.df.gov.br/dodf/materia/visualizar"
+DODF_ITEMS_PER_PAGE = 10    # fixo pelo portal
+DODF_MAX_PAGES    = 30      # cap por dia (~300 matérias) para limitar requests
+# tipos de matéria no DODF que indicam licitação/contratação
+DODF_TIPOS_RELEVANTES = {
+    "aviso",
+    "aviso de abertura de licitação",
+    "aviso de abertura",
+    "edital",
+    "aviso de suspensão",
+    "aviso de reabertura",
+}
+
 DATA_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 DATA_FILE = os.path.join(DATA_DIR, "licitacoes.json")
 
@@ -956,6 +971,245 @@ def fetch_querido_diario(data_ini: date, data_fim: date) -> list:
 
 
 # ---------------------------------------------------------------------------
+# DODF — Diário Oficial do Distrito Federal
+# ---------------------------------------------------------------------------
+
+def date_to_dodf_ts(d: date) -> int:
+    """Converte date para o timestamp Unix (meia-noite BRT) usado pelo portal DODF."""
+    from datetime import datetime, timezone, timedelta
+    dt = datetime(d.year, d.month, d.day, 0, 0, 0,
+                  tzinfo=timezone(timedelta(hours=-3)))
+    return int(dt.timestamp())
+
+
+def _make_dodf_session() -> requests.Session:
+    """Cria sessão HTTP com cookies do portal dodf.df.gov.br."""
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Referer": "https://dodf.df.gov.br/",
+    })
+    try:
+        session.get("https://dodf.df.gov.br", timeout=30)
+    except Exception:
+        pass
+    return session
+
+
+def _fetch_dodf_page(session: requests.Session, ts: int, pagina: int) -> tuple:
+    """
+    Busca uma página do jornal DODF Seção III.
+    Retorna (lista de matérias, total_paginas).
+    """
+    try:
+        resp = session.get(
+            DODF_BASE,
+            params={"data": ts, "tpSecao": "III", "pagina": pagina},
+            timeout=30,
+        )
+        if resp.status_code not in (200, 202):
+            return [], 0
+    except Exception as e:
+        print(f"   DODF: erro HTTP pág {pagina}: {e}")
+        return [], 0
+
+    soup = BeautifulSoup(resp.text, "lxml")
+    for tag in soup.find_all("script"):
+        t = tag.string or ""
+        if "materiasDiario" not in t:
+            continue
+        # totalPaginas
+        tp_m = re.search(r"var totalPaginas\s*=\s*(\d+)", t)
+        total_pags = int(tp_m.group(1)) if tp_m else 1
+        # materiasDiario
+        md_m = re.search(r"var materiasDiario\s*=\s*(\[.*?\]);\s*var lista", t, re.DOTALL)
+        if md_m:
+            try:
+                return json.loads(md_m.group(1)), total_pags
+            except json.JSONDecodeError:
+                pass
+    return [], 0
+
+
+def _is_relevant_dodf_tipo(tipo: str) -> bool:
+    """Retorna True se o tipo de matéria DODF pode indicar licitação."""
+    norm = normalize_text(tipo)
+    if norm in {normalize_text(t) for t in DODF_TIPOS_RELEVANTES}:
+        return True
+    licitacao_terms = [
+        "licitacao", "pregao", "concorrencia", "dispensa",
+        "inexigibilidade", "chamamento", "credenciamento",
+        "abertura", "edital",
+    ]
+    return any(t in norm for t in licitacao_terms)
+
+
+def normalize_dodf_item(item: dict, pub_date: str) -> dict:
+    """
+    Converte uma matéria do DODF para o formato interno.
+
+    Campos relevantes:
+      item.coDemandante  → código do demandante
+      item.secao         → seção (ex: "Seção III")
+      item.poder         → lista de órgãos hierárquicos (ex: ["SETUR", "COMISSÃO..."])
+      item.tipo          → tipo da matéria (ex: "Aviso", "Edital")
+      item.coMateria     → ID único da matéria
+      item.titulo        → título
+      item.texto         → texto completo
+      item.slug          → slug para URL canônica
+    """
+    poder        = item.get("poder") or []
+    titulo       = item.get("titulo", "") or ""
+    texto        = item.get("texto", "") or ""
+    tipo         = item.get("tipo", "") or ""
+    co_materia   = item.get("coMateria", "") or ""
+
+    # Órgão: primeiro nível do poder (mais específico sem a sub-unidade burocrática)
+    # Ex: ['SETUR', 'COMISSÃO ESPECIAL DE LICITAÇÃO'] → 'SETUR'
+    orgao_nome = poder[0] if poder else "Órgão DF não informado"
+
+    # Objeto: título + texto (truncado para análise)
+    objeto = f"{titulo} — {texto[:400]}" if titulo else texto[:400]
+
+    # Valor: tenta extrair do texto
+    valor = _extract_valor_dou(texto)
+
+    # Modalidade: do tipo + título
+    modalidade = tipo if tipo else "Aviso DODF"
+    modalidade_patterns = [
+        (r"pregão eletrônico|pregão eletronico",   "Pregão Eletrônico"),
+        (r"pregão presencial|pregao presencial",   "Pregão Presencial"),
+        (r"concorrência|concorrencia",             "Concorrência"),
+        (r"dispensa",                              "Dispensa de Licitação"),
+        (r"inexigibilidade",                       "Inexigibilidade"),
+        (r"chamamento",                            "Chamamento Público"),
+    ]
+    texto_lower = (titulo + " " + texto).lower()
+    for pattern, nome in modalidade_patterns:
+        if re.search(pattern, texto_lower):
+            modalidade = nome
+            break
+
+    # URL canônica da matéria
+    fonte_url = (
+        f"{DODF_MATERIA_URL}?coMateria={co_materia}"
+        if co_materia
+        else "https://dodf.df.gov.br"
+    )
+
+    # Prazo: tenta extrair do texto (datas no formato dd/mm/yyyy após "abertura", "sessão", "prazo")
+    prazo = None
+    prazo_m = re.search(
+        r"(?:abertura|sessão|prazo|encerramento)[^.]{0,60}?(\d{2}/\d{2}/\d{4})",
+        texto, re.IGNORECASE
+    )
+    if prazo_m:
+        parts = prazo_m.group(1).split("/")
+        try:
+            prazo = f"{parts[2]}-{parts[1]}-{parts[0]}"
+        except Exception:
+            pass
+
+    return {
+        "_source": "dodf",
+        "orgaoEntidade": {
+            "razaoSocial":   orgao_nome,
+            "esferaNome":    "Estadual",    # DODF = Governo do DF (estadual)
+            "ufSigla":       "DF",
+            "municipioNome": "Brasília",
+        },
+        "unidadeOrgao": {
+            "ufSigla":       "DF",
+            "municipioNome": "Brasília",
+        },
+        "objetoCompra":             objeto,
+        "modalidadeNome":           modalidade,
+        "valorTotalEstimado":       valor,
+        "dataPublicacaoPncp":       pub_date,
+        "dataEncerramentoProposta": prazo,
+        "linkSistemaOrigem":        fonte_url,
+        "_dodf_co_materia":         co_materia,
+        "_dodf_poder":              poder,
+    }
+
+
+def fetch_dodf(data_ini: date, data_fim: date) -> list:
+    """
+    Busca licitações no DODF Seção III para o intervalo de datas.
+    Usa o endpoint jornal/diario com paginação (10 itens/pág).
+    Retorna lista de itens normalizados para o formato interno.
+    """
+    session      = _make_dodf_session()
+    all_normalized: list = []
+    seen_materia_ids: set = set()
+    current      = data_ini
+
+    while current <= data_fim:
+        ts          = date_to_dodf_ts(current)
+        pub_date    = current.isoformat()
+        pagina      = 1
+        total_pages = None
+
+        print(f"   DODF: buscando {current}...")
+
+        while True:
+            materias, tp = _fetch_dodf_page(session, ts, pagina)
+
+            if total_pages is None:
+                total_pages = tp
+                if total_pages == 0:
+                    # Sem edição (fim de semana / feriado)
+                    print(f"   DODF: {current} sem edição")
+                    break
+                print(f"   DODF: {current} — {total_pages} páginas, ~{total_pages * DODF_ITEMS_PER_PAGE} matérias")
+
+            if not materias:
+                break
+
+            for item in materias:
+                co = item.get("coMateria", "")
+                if co and co in seen_materia_ids:
+                    continue
+                if co:
+                    seen_materia_ids.add(co)
+
+                # Filtra tipos relevantes para licitação
+                if not _is_relevant_dodf_tipo(item.get("tipo", "")):
+                    continue
+
+                # Keyword match no título + texto
+                texto_full = (item.get("titulo", "") + " " +
+                              item.get("texto", "") + " " +
+                              " ".join(item.get("poder", [])))
+                if not keyword_match(texto_full):
+                    continue
+
+                normalized = normalize_dodf_item(item, pub_date)
+                all_normalized.append(normalized)
+
+            if pagina >= min(total_pages, DODF_MAX_PAGES):
+                break
+
+            pagina  += 1
+            time.sleep(0.5)  # gentil com o servidor
+
+        if current < data_fim:
+            time.sleep(1)
+        current += timedelta(days=1)
+
+    print(f"   Total DODF: {len(all_normalized)} licitações brutas")
+    return all_normalized
+
+
+# ---------------------------------------------------------------------------
 # Gemini
 # ---------------------------------------------------------------------------
 
@@ -1116,14 +1370,28 @@ def run():
     qd_candidates = _filter_candidates(qd_new, existing_ids)
     print(f"   {len(qd_candidates)} candidatos do Querido Diário após filtro\n")
 
-    all_candidates = candidates + transp_candidates + dou_candidates + qd_candidates
+    # ------------------------------------------------------------------
+    # 5. DODF — Diário Oficial do Distrito Federal
+    # ------------------------------------------------------------------
+    print(f"5. DODF ({dez_dias_atras} → {hoje})...\n")
+    dodf_raw = fetch_dodf(dez_dias_atras, hoje)
+
+    # Deduplicar contra todas as fontes anteriores
+    known_ids_dodf = known_ids_all | {licitacao_id(build_pncp_url(i)) for i in qd_raw}
+    dodf_new = [i for i in dodf_raw
+                if licitacao_id(build_pncp_url(i)) not in known_ids_dodf]
+
+    dodf_candidates = _filter_candidates(dodf_new, existing_ids)
+    print(f"   {len(dodf_candidates)} candidatos do DODF após filtro\n")
+
+    all_candidates = candidates + transp_candidates + dou_candidates + qd_candidates + dodf_candidates
 
     # ------------------------------------------------------------------
-    # 5. Análise Gemini
+    # 6. Análise Gemini
     # ------------------------------------------------------------------
     # Cap: prioriza fontes com dados mais estruturados (PNCP > DOU > QD)
     if len(all_candidates) > GEMINI_MAX_CANDIDATES:
-        SOURCE_PRIORITY = {"pncp": 0, "transparencia": 1, "dou": 2, "qd": 3}
+        SOURCE_PRIORITY = {"pncp": 0, "transparencia": 1, "dou": 2, "dodf": 3, "qd": 4}
         all_candidates.sort(
             key=lambda x: SOURCE_PRIORITY.get(x.get("_source", "pncp").lower(), 9)
         )
@@ -1131,7 +1399,7 @@ def run():
               f"(prioridade: PNCP > DOU > QD)\n")
         all_candidates = all_candidates[:GEMINI_MAX_CANDIDATES]
 
-    print(f"5. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
+    print(f"6. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
 
     if not all_candidates:
         print("Nenhuma licitação nova para analisar. Atualizando timestamp...")
@@ -1193,7 +1461,7 @@ def run():
             continue
 
     # ------------------------------------------------------------------
-    # 6. Merge, poda e save
+    # 7. Merge, poda e save
     # ------------------------------------------------------------------
     kept = [
         l for l in existing_data.get("licitacoes", [])
