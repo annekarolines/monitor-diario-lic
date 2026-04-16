@@ -6,12 +6,40 @@ Fontes:
   2. Portal da Transparência — api.portaldatransparencia.gov.br
   3. DOU   — Diário Oficial da União, Seção 3 (in.gov.br)
   4. QD    — Querido Diário, diários oficiais municipais (queridodiario.ok.org.br)
+  5. DODF  — Diário Oficial do Distrito Federal (dodf.df.gov.br)
 
 Limites Portal da Transparência:
   - 00h-06h BRT: 700 req/min
   - Demais horários: 400 req/min
   - APIs restritas: 180 req/min
   Usamos 120 req/min como margem segura (abaixo do limite restrito).
+
+# ---------------------------------------------------------------------------
+# Fontes planejadas (não implementadas)
+# ---------------------------------------------------------------------------
+#
+# 6. Google Notícias RSS — esforço estimado: baixo
+#    Fallback para portais fora do escopo das APIs (Sistema S, Diários estaduais
+#    não cobertos pelo QD, portais regionais).
+#    URL: https://news.google.com/rss/search?q={query}&hl=pt-BR&gl=BR&ceid=BR:pt-419
+#    Queries sugeridas: "licitação agência publicidade", "pregão comunicação marketing",
+#                       "concorrência publicidade propaganda"
+#    Prós: cobertura ampla, feed público sem autenticação, fácil de parsear (feedparser)
+#    Contras: resultados são notícias sobre licitações (já publicadas em veículos de
+#             imprensa), não editais diretos — score Gemini filtraria os falsos positivos
+#
+# 7. Portal FIEG / Sistema S estadual — esforço estimado: alto
+#    Licitações do SENAI, SESI e SESC publicadas nas federações industriais estaduais.
+#    Entidades do Sistema S não são regidas pela Lei 14.133/2021 — não publicam no PNCP
+#    e não precisam publicar no DOU, apenas em seu próprio portal.
+#    Portais por estado (todos sem API pública):
+#      FIEG (GO): https://www.fieg.com.br/licitacao/           ← caso SENAI/SESI Goiás
+#      FIESP (SP): https://www.fiesp.com.br/licitacoes/
+#      FIEMG (MG): https://www7.fiemg.com.br/licitacoes/
+#      FIERGS (RS): https://www.fiergs.org.br/licitacoes
+#      FIERJ (RJ): https://www.firjan.com.br/licitacoes/
+#    Todos são aplicações legadas (Java/PHP) com sessão HTML — requerem scraping.
+#    Recomendação: priorizar FIEG (Goiás) e FIESP (São Paulo) na primeira iteração.
 """
 
 import os
