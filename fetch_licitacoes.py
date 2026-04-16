@@ -60,7 +60,7 @@ from bs4 import BeautifulSoup
 load_dotenv()
 
 _gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-GEMINI_MODEL = "gemini-2.0-flash-lite"
+GEMINI_MODEL = "gemini-2.5-flash-lite"
 
 # ---------------------------------------------------------------------------
 # Constantes
