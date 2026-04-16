@@ -792,6 +792,120 @@ def normalize_dou_item(item: dict) -> dict:
     }
 
 
+def _enrich_dou_with_pncp(item: dict) -> dict:
+    """
+    Enriquece um item DOU com dados completos do PNCP usando o UASG extraído
+    do conteúdo do artigo.
+
+    Fluxo:
+      1. Extrai UASG do texto (_dou_content_full)
+      2. Extrai número do processo para desambiguação
+      3. Mapeia modalidade DOU → código PNCP
+      4. Busca no PNCP dentro de janela de ±7 dias ao redor da publicação
+      5. Filtra por codigoUnidade == UASG; prioriza match por processo
+      6. Copia: valorTotalEstimado, dataEncerramentoProposta, modalidadeNome,
+                link PNCP, razaoSocial oficial
+
+    Retorna o item original sem modificação se nenhum match for encontrado.
+    """
+    content = item.get("_dou_content_full", "")
+    if not content:
+        return item
+
+    # 1. UASG
+    uasg_m = re.search(r"UASG\s*:?\s*(\d{5,6})", content, re.IGNORECASE)
+    if not uasg_m:
+        return item
+    uasg = uasg_m.group(1)
+
+    # 2. Processo (para desambiguação quando UASG tem várias licitações na janela)
+    proc_m = re.search(r"[Pp]rocesso\s*[Nn][º°ı]?\s*:?\s*([\d./_\-]+)", content)
+    dou_processo = re.sub(r"[.\-/]", "", proc_m.group(1)) if proc_m else ""
+
+    # 3. Modalidade → código(s) PNCP
+    mod_norm = normalize_text(item.get("modalidadeNome", ""))
+    if "pregao eletronico" in mod_norm:
+        codigos = [6]
+    elif "pregao presencial" in mod_norm:
+        codigos = [7]
+    elif "concorrencia eletronica" in mod_norm:
+        codigos = [4]
+    elif "concorrencia" in mod_norm:
+        codigos = [4, 5]
+    elif "dispensa eletronica" in mod_norm:
+        codigos = [8]
+    elif "dispensa" in mod_norm:
+        codigos = [8]
+    elif "inexigibilidade" in mod_norm:
+        codigos = [9]
+    elif "chamamento" in mod_norm:
+        codigos = [3]
+    else:
+        codigos = [4, 5, 6, 7, 8, 9]   # busca ampla se modalidade desconhecida
+
+    # 4. Janela de datas: −7 a +3 dias em torno da publicação do DOU
+    try:
+        pub_d = date.fromisoformat(item.get("dataPublicacaoPncp", "")[:10])
+    except Exception:
+        pub_d = date.today()
+    data_ini = pncp_date(pub_d - timedelta(days=7))
+    data_fim = pncp_date(pub_d + timedelta(days=3))
+
+    # 5. Busca e match
+    for cod in codigos:
+        try:
+            resp = requests.get(
+                PNCP_BASE,
+                params={"dataInicial": data_ini, "dataFinal": data_fim,
+                        "codigoModalidadeContratacao": cod,
+                        "pagina": 1, "tamanhoPagina": 50},
+                timeout=20,
+            )
+            if resp.status_code != 200:
+                continue
+            payload = resp.json()
+            candidates = payload if isinstance(payload, list) else payload.get("data", [])
+
+            best = None
+            for it in candidates:
+                if str(it.get("unidadeOrgao", {}).get("codigoUnidade", "")) != uasg:
+                    continue
+                # Match exato por processo
+                pncp_proc = re.sub(r"[.\-/]", "", it.get("processo", ""))
+                if dou_processo and pncp_proc and dou_processo == pncp_proc:
+                    best = it
+                    break           # match perfeito — para aqui
+                if best is None:    # primeiro match por UASG como fallback
+                    best = it
+
+            if best:
+                cnpj = best.get("orgaoEntidade", {}).get("cnpj", "")
+                ano  = best.get("anoCompra", "")
+                seq  = best.get("sequencialCompra", "")
+                pncp_url = (f"https://pncp.gov.br/app/editais/{cnpj}/{ano}/{seq}"
+                            if cnpj and ano and seq else None)
+
+                # Atualiza campos enriquecidos
+                if best.get("valorTotalEstimado") is not None:
+                    item["valorTotalEstimado"] = best["valorTotalEstimado"]
+                if best.get("dataEncerramentoProposta"):
+                    item["dataEncerramentoProposta"] = best["dataEncerramentoProposta"][:10]
+                if best.get("modalidadeNome"):
+                    item["modalidadeNome"] = best["modalidadeNome"]
+                if pncp_url:
+                    item["_link_edital"] = pncp_url
+                razao = best.get("orgaoEntidade", {}).get("razaoSocial", "")
+                if razao:
+                    item["orgaoEntidade"]["razaoSocial"] = razao.title()
+                item["_pncp_enriched"] = True
+                return item
+
+        except Exception:
+            continue
+
+    return item
+
+
 def _is_relevant_dou_type(art_type: str) -> bool:
     """
     Retorna True se o artType do DOU indica uma NOVA licitação/edital.
@@ -939,6 +1053,19 @@ def fetch_dou(data_ini: date, data_fim: date) -> list:
               f"{len(relevant)} relevantes por keyword")
 
         normalized = [normalize_dou_item(i) for i in relevant]
+
+        # Enriquecimento via PNCP para itens com UASG no conteúdo
+        enriched_count = 0
+        for idx, norm_item in enumerate(normalized):
+            if re.search(r"UASG\s*:?\s*\d{5,6}",
+                         norm_item.get("_dou_content_full", ""), re.IGNORECASE):
+                normalized[idx] = _enrich_dou_with_pncp(norm_item)
+                if normalized[idx].get("_pncp_enriched"):
+                    enriched_count += 1
+                time.sleep(0.5)   # evita flood no PNCP
+        if enriched_count:
+            print(f"   DOU: {enriched_count}/{len(normalized)} itens enriquecidos via PNCP")
+
         all_normalized.extend(normalized)
 
         if current < data_fim:
