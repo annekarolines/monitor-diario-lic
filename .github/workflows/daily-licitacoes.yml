@@ -2,8 +2,9 @@ name: Daily Licitacoes Update
 
 on:
   schedule:
-    # Roda às 11h UTC = 8h horário de Brasília, apenas dias úteis
-    - cron: "0 11 * * 1-5"
+    # Roda às 14h UTC = 11h horário de Brasília, apenas dias úteis
+    # 11h BRT garante que o DOU Seção 3 (publicado ~8h-9h BRT) já está disponível
+    - cron: "0 14 * * 1-5"
   workflow_dispatch:
 
 permissions:
