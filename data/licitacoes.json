@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-15T12:13:07.101503+00:00",
-  "total": 24,
+  "last_updated": "2026-04-16T12:20:37.987413+00:00",
+  "total": 23,
   "licitacoes": [
     {
       "id": "5af0b07ad5695d3df0ea4c7b29df3444",
@@ -326,20 +326,6 @@
       "relevance_score": 9,
       "categoria": "Comunicação Institucional",
       "justificativa": "Trata-se de um contrato de grande porte com escopo abrangente em comunicação institucional, ideal para agências especializadas neste segmento."
-    },
-    {
-      "id": "1c12a09604e78eea82d69b12b84a4c37",
-      "orgao": "MUNICIPIO DE SALTO",
-      "ambito": "Municipal – Salto/SP",
-      "objeto": "Contratação de agência para prestação de serviços de publicidade e propaganda ao Município de Salto, conforme a Lei nº 12.232/10.",
-      "modalidade": "Concorrência - Presencial",
-      "valor_estimado": 1500000.0,
-      "prazo_proposta": "2026-05-11",
-      "data_publicacao": "2026-03-16",
-      "fonte_url": "https://pncp.gov.br/app/editais/46634507000106/2026/126",
-      "relevance_score": 9,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "Este é um contrato de alto valor para serviços abrangentes de publicidade, representando uma excelente oportunidade para agências de comunicação."
     }
   ]
 }
