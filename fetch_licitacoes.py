@@ -93,7 +93,7 @@ TRANSPARENCIA_RPM       = 120   # conservador: abaixo do limite de 180 (APIs res
 
 # DOU — Diário Oficial da União
 DOU_BASE = "https://www.in.gov.br/leiturajornal"
-# artType values que indicam licitação/edital no DO3
+# artType values que indicam NOVA licitação/edital no DO3
 DOU_ART_TYPES = {
     "aviso de licitação",
     "aviso de licitação pública",
@@ -104,8 +104,34 @@ DOU_ART_TYPES = {
     "aviso de dispensa de licitação",
     "aviso de chamamento público",
     "aviso de inexigibilidade",
+    "aviso de credenciamento",
     "aviso",
 }
+# artTypes que NÃO são novas oportunidades: suspensões, anulações, extratos, ARPs já assinadas
+DOU_ART_TYPES_EXCLUDE = {
+    "aviso de suspensão",
+    "aviso de suspensao",
+    "aviso de reabertura",          # reabertura já está no sistema
+    "aviso de intenção de anulação",
+    "aviso de intencao de anulacao",
+    "extrato de termo aditivo",
+    "extrato de contrato",
+    "extrato",
+    "aviso de registro de preços",  # ARP já assinada, não é abertura
+    "aviso de registro de precos",
+    "resultado de julgamento",
+    "resultado de licitação",
+}
+# Frases de início de artigo que indicam NÃO ser uma nova licitação
+DOU_CONTENT_EXCLUDE_PREFIXES = (
+    "extrato de termo aditivo",
+    "extrato de contrato",
+    "resultado de julgamento",
+    "homologação",
+    "adjudicação",
+    "revogação",
+    "anulação",
+)
 
 # Querido Diário — diários oficiais municipais
 QD_BASE                  = "https://api.queridodiario.ok.org.br/gazettes"
@@ -177,6 +203,7 @@ KEYWORDS = [
 ]
 
 EXCLUDE_KEYWORDS = [
+    # Áreas não relacionadas a agência de comunicação
     "assessoria de imprensa",
     "assessoria à imprensa",
     "fornecimento de equipamento",
@@ -186,10 +213,26 @@ EXCLUDE_KEYWORDS = [
     "radiocomunicacao",
     "sistema de comunicacao de dados",
     "sistema de comunicação de dados",
+    # Atos regulatórios e administrativos (CADE, etc.)
     "ato de concentracao",
     "ato de concentração",
     "da-se publicidade ao seguinte ato",
     "dá-se publicidade ao seguinte ato",
+    # Usos de "publicidade" como princípio jurídico/transparência — NÃO é agência
+    "principio da publicidade",
+    "princípio da publicidade",
+    "publicidade e transparencia",
+    "publicidade e transparência",
+    "publicidade legal",          # publicação de avisos legais no DOU/jornal
+    "publicidade dos atos",       # publicação de atos oficiais
+    "publicidade de atos",
+    "publicidade institucional dos atos",
+    "em cumprimento ao principio",
+    # Credenciamento de pessoas físicas (júri, avaliação) — não é contrato de agência
+    "pessoas fisicas",
+    "pessoa fisica",
+    "subcomissao de julgamento",
+    "subcomissão de julgamento",
 ]
 
 # ---------------------------------------------------------------------------
@@ -661,18 +704,67 @@ def normalize_dou_item(item: dict) -> dict:
     # Valor estimado (tenta extrair do texto)
     valor = _extract_valor_dou(content_clean)
 
-    # Modalidade derivada do artType
+    # -----------------------------------------------------------------------
+    # Modalidade: extrai do texto do artigo (mais específico que o artType)
+    # -----------------------------------------------------------------------
+    _modalidade_map = [
+        (r"PREG[AÃ]O ELETR[OÔ]NICO",        "Pregão Eletrônico"),
+        (r"PREG[AÃ]O PRESENCIAL",            "Pregão Presencial"),
+        (r"CONCORR[EÊ]NCIA ELETR[OÔ]NICA",  "Concorrência Eletrônica"),
+        (r"CONCORR[EÊ]NCIA",                 "Concorrência"),
+        (r"DISPENSA ELETR[OÔ]NICA",          "Dispensa Eletrônica"),
+        (r"DISPENSA DE LICITA[CÇ][AÃ]O",     "Dispensa de Licitação"),
+        (r"INEXIGIBILIDADE",                  "Inexigibilidade"),
+        (r"CHAMAMENTO P[UÚ]BLICO",           "Chamamento Público"),
+        (r"CREDENCIAMENTO",                  "Credenciamento"),
+    ]
     modalidade = art_type if art_type else "Aviso DOU"
+    for pat, nome in _modalidade_map:
+        if re.search(pat, content_clean, re.IGNORECASE):
+            modalidade = nome
+            break
 
-    # URL do artigo no DOU
+    # -----------------------------------------------------------------------
+    # Prazo de recebimento de propostas (extraído do texto do artigo)
+    # -----------------------------------------------------------------------
+    _prazo_patterns = [
+        r"Recebimento[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Abertura das Propostas[^:]*?:\s*(?:dia\s*)?(\d{2}/\d{2}/\d{4})",
+        r"Sess[aã]o[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"DATA DA SESS[AÃ]O[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Entrega das Propostas[^:]*?:\s*(?:a partir de\s*)?(\d{2}/\d{2}/\d{4})",
+        r"(\d{2}/\d{2}/\d{4}).*?[àas]\s*\d{1,2}h",   # fallback: data seguida de hora
+    ]
+    prazo_dou = None
+    for pat in _prazo_patterns:
+        m = re.search(pat, content_clean, re.IGNORECASE)
+        if m:
+            prazo_dou = _iso_from_br(m.group(1))
+            break
+
+    # -----------------------------------------------------------------------
+    # Link do edital: PNCP ou portal gov.br mencionado no texto
+    # -----------------------------------------------------------------------
+    _edital_link_patterns = [
+        r"https?://pncp\.gov\.br/\S+",
+        r"https?://www\.gov\.br/compras\S*",
+        r"https?://comprasnet\.gov\.br/\S+",
+    ]
+    link_edital = None
+    for pat in _edital_link_patterns:
+        m = re.search(pat, content_clean, re.IGNORECASE)
+        if m:
+            link_edital = m.group(0).rstrip(".,;)")
+            break
+
+    # URL do artigo no DOU (link primário — acesso ao aviso oficial)
     if url_title:
         fonte_url = f"https://www.in.gov.br/en/web/dou/-/{url_title}"
     else:
         fonte_url = f"https://www.in.gov.br/leiturajornal?data={dou_date(date.today())}&secao=do3"
 
-    # Âmbito: DOU Seção 3 = federal
+    # Âmbito: DOU Seção 3 = federal (esfera do artigo publicador)
     esfera = "Federal"
-    # Tenta identificar UF da hierarquia
     uf_match = re.search(r"\b([A-Z]{2})\b", hierarchy)
     uf = uf_match.group(1) if uf_match else ""
 
@@ -692,17 +784,24 @@ def normalize_dou_item(item: dict) -> dict:
         "modalidadeNome":           modalidade,
         "valorTotalEstimado":       valor,
         "dataPublicacaoPncp":       pub_date,
-        "dataEncerramentoProposta": None,
+        "dataEncerramentoProposta": prazo_dou,
         "linkSistemaOrigem":        fonte_url,
+        "_link_edital":             link_edital,   # URL direta para o edital (PNCP/compras)
         "_dou_art_type":            art_type,
         "_dou_content_full":        content_clean[:2000],
     }
 
 
 def _is_relevant_dou_type(art_type: str) -> bool:
-    """Retorna True se o artType do DOU indica um aviso/edital de licitação."""
+    """
+    Retorna True se o artType do DOU indica uma NOVA licitação/edital.
+    Exclui explicitamente suspensões, anulações, extratos e ARPs já assinadas.
+    """
     norm = normalize_text(art_type)
-    # Verifica contra lista conhecida
+    # Bloqueia artTypes que não são novas oportunidades
+    if norm in {normalize_text(t) for t in DOU_ART_TYPES_EXCLUDE}:
+        return False
+    # Verifica contra lista de tipos relevantes
     if norm in {normalize_text(t) for t in DOU_ART_TYPES}:
         return True
     # Cobre variantes como "Aviso de Licitação-Pregão", "Aviso de Licitação-Concorrência"
@@ -824,6 +923,13 @@ def fetch_dou(data_ini: date, data_fim: date) -> list:
                 it.get("content", "") or "",
                 it.get("hierarchyStr", "") or "",
             ])
+            # Bloqueia artigos que pelo conteúdo não são novas oportunidades
+            # (extratos, suspensões, resultados — independente do artType genérico "aviso")
+            titulo_norm = normalize_text(it.get("titulo", "") or "")
+            if titulo_norm.startswith(
+                tuple(normalize_text(p) for p in DOU_CONTENT_EXCLUDE_PREFIXES)
+            ):
+                continue
             if keyword_match(texto):
                 relevant.append(it)
 
@@ -1502,6 +1608,7 @@ def run():
                 "prazo_proposta":  prazo,
                 "data_publicacao": item.get("dataPublicacaoPncp", hoje.isoformat())[:10],
                 "fonte_url":       url,
+                "link_edital":     item.get("_link_edital"),   # URL edital (PNCP/compras) quando disponível
                 "fonte":           fonte,
                 "relevance_score": score,
                 "categoria":       analysis.get("categoria", "Comunicação Institucional"),
