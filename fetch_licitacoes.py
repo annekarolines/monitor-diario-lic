@@ -51,15 +51,16 @@ import math
 import unicodedata
 from collections import defaultdict
 import requests
-import google.generativeai as genai
+from google import genai
+from google.genai import types as genai_types
 from datetime import datetime, timedelta, timezone, date
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
 load_dotenv()
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-2.0-flash")
+_gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+GEMINI_MODEL = "gemini-2.0-flash-lite"
 
 # ---------------------------------------------------------------------------
 # Constantes
@@ -1268,9 +1269,10 @@ def analyze_with_gemini(item: dict, retries=3) -> dict:
 
     for attempt in range(retries):
         try:
-            response = model.generate_content(
-                prompt,
-                generation_config=genai.GenerationConfig(
+            response = _gemini_client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=genai_types.GenerateContentConfig(
                     response_mime_type="application/json",
                     max_output_tokens=1000,
                     temperature=0.3,
