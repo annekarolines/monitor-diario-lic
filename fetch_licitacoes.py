@@ -21,6 +21,7 @@ import time
 import re
 import math
 import unicodedata
+from collections import defaultdict
 import requests
 import google.generativeai as genai
 from datetime import datetime, timedelta, timezone, date
@@ -37,7 +38,15 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # ---------------------------------------------------------------------------
 
 GEMINI_DELAY         = 5    # segundos entre chamadas Gemini (free tier: 20 RPM)
-GEMINI_MAX_CANDIDATES = 30  # cap total de análises por run (protege cota)
+# Quotas por fonte: garante que DOU/DODF nunca sejam descartados por volume de PNCP.
+# Total = 50 análises/run — bem abaixo do limite free tier (1.500 RPD, 20 RPM).
+GEMINI_SOURCE_QUOTAS = {
+    "pncp":         20,
+    "transparencia": 5,
+    "dou":          10,
+    "dodf":          8,
+    "qd":            7,
+}  # total = 50
 MIN_VALOR            = 10_000.0
 MAX_AGE_DAYS         = 30
 PAGE_SIZE            = 50   # máximo PNCP
@@ -1389,15 +1398,30 @@ def run():
     # ------------------------------------------------------------------
     # 6. Análise Gemini
     # ------------------------------------------------------------------
-    # Cap: prioriza fontes com dados mais estruturados (PNCP > DOU > QD)
-    if len(all_candidates) > GEMINI_MAX_CANDIDATES:
-        SOURCE_PRIORITY = {"pncp": 0, "transparencia": 1, "dou": 2, "dodf": 3, "qd": 4}
-        all_candidates.sort(
-            key=lambda x: SOURCE_PRIORITY.get(x.get("_source", "pncp").lower(), 9)
+    # Quota por fonte: garante que nenhuma fonte monopolize os slots Gemini.
+    # Itens mais recentes têm prioridade dentro de cada fonte.
+    total_quota = sum(GEMINI_SOURCE_QUOTAS.values())
+    if len(all_candidates) > total_quota:
+        by_source: dict = defaultdict(list)
+        for c in all_candidates:
+            src = c.get("_source", "pncp").lower()
+            by_source[src].append(c)
+
+        # Dentro de cada fonte, prioriza os mais recentes
+        capped: list = []
+        for src, quota in GEMINI_SOURCE_QUOTAS.items():
+            bucket = by_source.get(src, [])
+            bucket.sort(
+                key=lambda x: x.get("dataPublicacaoPncp", ""),
+                reverse=True,
+            )
+            capped.extend(bucket[:quota])
+
+        print(
+            f"   Quota aplicada: {len(all_candidates)} → {len(capped)} candidatos "
+            f"({', '.join(f'{s}:{min(len(by_source.get(s,[])),q)}' for s,q in GEMINI_SOURCE_QUOTAS.items())})\n"
         )
-        print(f"   Cap aplicado: {len(all_candidates)} → {GEMINI_MAX_CANDIDATES} candidatos "
-              f"(prioridade: PNCP > DOU > QD)\n")
-        all_candidates = all_candidates[:GEMINI_MAX_CANDIDATES]
+        all_candidates = capped
 
     print(f"6. {len(all_candidates)} licitações no pré-filtro. Analisando com Gemini...\n")
 
