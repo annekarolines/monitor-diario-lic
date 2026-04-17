@@ -668,41 +668,61 @@ def _extract_edital_link(text: str) -> str:
     """
     Extrai a URL mais provável do edital dentro do texto do aviso DOU.
 
-    Estratégia: captura todas as URLs e as ordena por prioridade.
-    URLs do próprio in.gov.br são descartadas (são o aviso, não o edital).
+    Captura URLs com e sem protocolo (municípios frequentemente omitem https://).
+    Exemplos cobertos:
+      - https://pncp.gov.br/app/editais/...
+      - https://www.gov.br/mds/pt-br/...
+      - www.portaldecompraspublicas.com.br (sem https://)
+      - www.pousoalegre.mg.gov.br/licitacao (sem https://)
+
     Prioridade: PNCP > compras.gov.br > comprasnet > gov.br/<ministério>
-                > portais estaduais/municipais (.gov.br genéricos)
-                > qualquer outro link.
-    Retorna a URL de maior prioridade ou None se nada for encontrado.
+                > .gov.br genérico > portal de compras públicas
+                > .org.br / .com.br com "licitac/edital/compras" no path.
+    Retorna URL completa (adiciona https:// quando ausente) ou None.
     """
     if not text:
         return None
 
-    # Captura toda URL http/https, termina em whitespace ou caracteres "ruins"
-    urls = re.findall(r"https?://[^\s<>\"'()\[\]]+", text)
-    if not urls:
+    # 1. URLs com protocolo
+    urls_with_proto = re.findall(r"https?://[^\s<>\"'()\[\]]+", text)
+    # 2. URLs sem protocolo: www.<algo>.<tld>/... — exclui emails (sem @)
+    urls_without_proto = re.findall(
+        r"\bwww\.[a-zA-Z0-9][\w.\-]*/[\w./\-?=%&+#_]+", text
+    )
+    # Normaliza: adiciona https:// nas sem protocolo
+    all_urls = urls_with_proto + [f"https://{u}" for u in urls_without_proto]
+    # Remove duplicatas, limpa pontuação final e valida TLD mínimo
+    seen, unique_urls = set(), []
+    for u in all_urls:
+        u_clean = u.rstrip(".,;:)\"'")
+        # Deve ter TLD válido: domínio termina em .<2+ letras> antes de / ou fim da string
+        if not re.search(r"\.[a-zA-Z]{2,4}(?:/|$)", u_clean):
+            continue
+        if u_clean not in seen:
+            seen.add(u_clean)
+            unique_urls.append(u_clean)
+
+    if not unique_urls:
         return None
 
     def priority(url: str) -> int:
         u = url.lower()
-        if "in.gov.br" in u:                    return 99   # exclui — é o próprio aviso
+        if "in.gov.br" in u:                    return 99   # exclui — é o próprio aviso DOU
         if "pncp.gov.br" in u:                  return 0
         if "compras.gov.br" in u:               return 1
         if "comprasnet.gov.br" in u:            return 2
-        # gov.br/<ministerio>/... (ex: gov.br/mds/pt-br/..., gov.br/mec/...)
-        if re.match(r"https?://(?:www\.)?gov\.br/[\w-]+/", u): return 3
-        if ".gov.br" in u:                      return 4
-        if ".org.br" in u:                      return 5
-        return 6
+        if re.search(r"gov\.br/[\w-]+/", u):   return 3    # gov.br/<ministério>
+        if ".gov.br" in u:                      return 4    # estadual/municipal
+        if "portaldecompraspublicas" in u:      return 5
+        if "licitacoes" in u or "licitacao" in u or "edital" in u:  return 6
+        if ".org.br" in u or ".com.br" in u:   return 7
+        return 8
 
-    # Ordena por prioridade e pega o primeiro (excluindo os do próprio aviso)
-    sorted_urls = sorted(urls, key=priority)
+    sorted_urls = sorted(unique_urls, key=priority)
     best = sorted_urls[0]
     if priority(best) >= 99:
         return None
-
-    # Limpa pontuação/sufixo indesejado
-    return best.rstrip(".,;:)\"'")
+    return best
 
 
 def normalize_dou_item(item: dict) -> dict:
@@ -792,12 +812,34 @@ def normalize_dou_item(item: dict) -> dict:
         r"Entrega das Propostas[^:]*?:\s*(?:a partir de\s*)?(\d{2}/\d{2}/\d{4})",
         r"(\d{2}/\d{2}/\d{4}).*?[àas]\s*\d{1,2}h",   # fallback: data seguida de hora
     ]
+    # Meses em português para datas por extenso (ex: "15 de junho de 2026")
+    _MESES_PT = {
+        "janeiro":"01","fevereiro":"02","março":"03","marco":"03",
+        "abril":"04","maio":"05","junho":"06","julho":"07","agosto":"08",
+        "setembro":"09","outubro":"10","novembro":"11","dezembro":"12",
+    }
+    _prazo_extenso = re.compile(
+        r"(?:dia\s+)?(\d{1,2})\s+de\s+(janeiro|fevereiro|mar[çc]o|abril|maio|junho|julho|"
+        r"agosto|setembro|outubro|novembro|dezembro)\s+de\s+(\d{4})"
+        r"(?:[^.]{0,30}?(?:[àas]|às)\s*\d{1,2}h)?",
+        re.IGNORECASE,
+    )
+
     prazo_dou = None
     for pat in _prazo_patterns:
         m = re.search(pat, content_clean, re.IGNORECASE)
         if m:
             prazo_dou = _iso_from_br(m.group(1))
             break
+    if not prazo_dou:
+        # Tenta formato extenso: "16 de junho de 2026"
+        for m in _prazo_extenso.finditer(content_clean):
+            dia  = m.group(1).zfill(2)
+            mes  = _MESES_PT.get(normalize_text(m.group(2)), "")
+            ano  = m.group(3)
+            if mes:
+                prazo_dou = f"{ano}-{mes}-{dia}"
+                break
 
     # -----------------------------------------------------------------------
     # Link do edital: procura URL no texto (PNCP, compras.gov, portais dos órgãos)
