@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-17T17:20:26.576738+00:00",
-  "total": 82,
+  "last_updated": "2026-04-17T17:52:07.700947+00:00",
+  "total": 86,
   "licitacoes": [
     {
       "id": "ae49ea4f321a08284b9fea5cfd58411a",
@@ -522,6 +522,23 @@
       "justificativa": "O objeto abrange a divulgação de atrativos turísticos em plataformas digitais, alinhando-se diretamente com as competências de marketing digital de uma agência."
     },
     {
+      "id": "0f492a7aab32ec9cef9db2d90dd8c9a2",
+      "orgao": "Jaboti",
+      "ambito": "Municipal – Jaboti/PR",
+      "objeto": "Contratação para fornecimento de figurinos padronizados para atividades culturais, visando fortalecer a identidade visual dos grupos e aprimorar a qualidade estética e profissionalismo em eventos.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-15",
+      "fonte_url": "https://data.queridodiario.ok.org.br/4111704/2026-04-15/b0ef972e396ffd6be7606ef076891a8b4a3955d9.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 6,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "A licitação foca em identidade visual e criação de materiais que impactam a imagem pública, alinhando-se diretamente com a expertise de agências de comunicação em branding e design.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "18eb5a19a0517705e898ee1704cd3b20",
       "orgao": "Maceió",
       "ambito": "Municipal – Maceió/AL",
@@ -598,6 +615,40 @@
       "justificativa": "Este contrato representa uma oportunidade significativa devido ao alto valor estimado e ao escopo focado em comunicação digital, alinhado com as competências de uma agência especializada."
     },
     {
+      "id": "ea6d347aeafce61452ad19ebd797dc09",
+      "orgao": "Alagoinhas",
+      "ambito": "Municipal – Alagoinhas/BA",
+      "objeto": "Contratação de serviços de consultoria em gestão de comunicação, marketing digital, gestão de redes sociais e produção de material publicitário.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/2900702/2026-04-14/d77f51cb8572bc3fd921365ed85e1a665c980877.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "O escopo abrange diversas frentes de atuação de agências de comunicação, com foco em marketing digital e redes sociais, indicando uma demanda estratégica do órgão.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "99d61418b40d8e438c5b1932528783a3",
+      "orgao": "Macaé",
+      "ambito": "Municipal – Macaé/RJ",
+      "objeto": "Curso de criação de vídeos para mídias sociais, com matrícula prevista para 04 de maio de 2026, promovido pela Secretaria da Mulher de Macaé.",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/3302403/2026-04-14/bfd05497f8b97e6cfbf848862869ade9eebb8f26.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "O escopo focado em produção de conteúdo audiovisual para redes sociais representa uma oportunidade direta para agências com expertise em marketing digital e produção de vídeo.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "522b64cf6132e03e1e22574f511a2209",
       "orgao": "Estado da Paraíba",
       "ambito": "Federal",
@@ -671,6 +722,23 @@
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "Embora o foco seja publicidade legal, a natureza do serviço em veículos de massa abre portas para serviços de comunicação mais amplos."
+    },
+    {
+      "id": "27e7c2ec9c18af78cbb89b4e744c77d0",
+      "orgao": "Cafelândia",
+      "ambito": "Municipal – Cafelândia/PR",
+      "objeto": "Credenciamento de empresas para prestação de serviços de comunicação, garantindo autenticidade, validade jurídica e integridade em conformidade com leis.",
+      "modalidade": "Credenciamento",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/4103453/2026-04-14/ad8abf142e468d16016792a4f1a202b8f78f4a30.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 6,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "O objeto foca em garantir a autenticidade e integridade dos processos de comunicação, o que pode envolver a criação de materiais e estratégias de comunicação institucional para a prefeitura.",
+      "tipo_aviso": "oportunidade"
     },
     {
       "id": "4c58abfa74e9850b97ec558df3fd2a04",
