@@ -447,6 +447,9 @@ body {
   font-weight: 600;
 }
 
+/* Garante que o atributo hidden esconde o link mesmo com display:inline-flex no .card-link */
+.card-link[hidden] { display: none !important; }
+
 /* ===================================================
    tipo_aviso: cards secundários (suspensões, anulações, ARPs, reaberturas)
    Cor diferente sinaliza que NÃO é nova oportunidade.

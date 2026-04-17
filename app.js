@@ -239,7 +239,8 @@ function buildCard(template, l) {
   if (l.link_edital && l.link_edital !== l.fonte_url) {
     // Dois links distintos: edital direto + aviso original
     linkEdital.href = l.link_edital;
-    linkEdital.hidden = false;
+    linkEdital.style.display = "";   // restaura display natural
+    linkEdital.removeAttribute("hidden");
     linkFonte.href = l.fonte_url || "#";
     // Label adaptado por fonte
     fonteLabel.textContent =
@@ -249,7 +250,8 @@ function buildCard(template, l) {
     linkFonte.classList.add("secondary");
   } else {
     // Sem link_edital separado — botão único aponta para a fonte
-    linkEdital.hidden = true;
+    linkEdital.style.display = "none";
+    linkEdital.setAttribute("hidden", "");
     linkFonte.href = l.fonte_url || "#";
     fonteLabel.textContent = "Ver edital completo";
     linkFonte.classList.remove("secondary");
