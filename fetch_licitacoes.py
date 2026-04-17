@@ -702,11 +702,13 @@ def _extract_edital_link(text: str) -> str:
         text,
     )
 
-    # 1. URLs com protocolo
-    urls_with_proto = re.findall(r"https?://[^\s<>\"'()\[\]]+", text)
+    # 1. URLs com protocolo — ASCII only (URLs válidas não têm chars acentuados)
+    urls_with_proto = re.findall(
+        r"https?://[a-zA-Z0-9.\-]+(?:/[a-zA-Z0-9./\-_~?=%&#@+!*']*)*", text
+    )
     # 2. URLs sem protocolo: www.<algo>.<tld>/... — exclui emails (sem @)
     urls_without_proto = re.findall(
-        r"\bwww\.[a-zA-Z0-9][\w.\-]*/[\w./\-?=%&+#_]+", text
+        r"\bwww\.[a-zA-Z0-9][\w.\-]*/[a-zA-Z0-9./\-_~?=%&#@+!*']+", text
     )
     # Normaliza: adiciona https:// nas sem protocolo
     all_urls = urls_with_proto + [f"https://{u}" for u in urls_without_proto]
@@ -714,6 +716,11 @@ def _extract_edital_link(text: str) -> str:
     seen, unique_urls = set(), []
     for u in all_urls:
         u_clean = u.rstrip(".,;:)\"'")
+        # Remove artefatos de pontuação portuguesa no final: /.Informa, /.xxx (path começando com .)
+        u_clean = re.sub(r"/\.[^/]*$", "/", u_clean)
+        # Remove trailing slash redundante que ficou após strip acima, mas mantém slash raiz
+        if u_clean.endswith("/") and u_clean.count("/") > 3:
+            u_clean = u_clean.rstrip("/") + "/"  # normaliza p/ terminar com /
         # Deve ter TLD válido: domínio termina em .<2+ letras> antes de / ou fim da string
         if not re.search(r"\.[a-zA-Z]{2,4}(?:/|$)", u_clean):
             continue

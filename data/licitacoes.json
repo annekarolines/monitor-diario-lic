@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-17T17:52:07.700947+00:00",
-  "total": 86,
+  "last_updated": "2026-04-17T19:56:29.800344+00:00",
+  "total": 91,
   "licitacoes": [
     {
       "id": "ae49ea4f321a08284b9fea5cfd58411a",
@@ -12,7 +12,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-17",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-700482977",
-      "link_edital": null,
+      "link_edital": "https://www.novaguarita.mt.gov.br/Transparencia/LicitacoeseContratos/",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
@@ -29,7 +29,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-17",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-700430622",
-      "link_edital": null,
+      "link_edital": "https://www.pousoalegre.mg.gov.br/licitacao",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
@@ -46,7 +46,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-17",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-dispensa-de-licitacao-eletronica-n-1/2026-700363060",
-      "link_edital": null,
+      "link_edital": "https://licitardigital.com.br",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
@@ -459,7 +459,8 @@
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Marketing Digital",
-      "justificativa": "O objeto foca diretamente em comunicação digital, um nicho forte para agências especializadas."
+      "justificativa": "O objeto foca diretamente em comunicação digital, um nicho forte para agências especializadas.",
+      "link_edital": "https://www.gov.br/mds/pt-br/acesso-a-informacao/licitacoes-e-contratos/editais-abertos/editais-2026"
     },
     {
       "id": "0c0049f66ddf72b8bb55664eca5f00f9",
@@ -567,7 +568,8 @@
       "fonte": "DOU",
       "relevance_score": 6,
       "categoria": "Comunicação Institucional",
-      "justificativa": "Embora o objeto seja para formação de comissão, a natureza do credenciamento em áreas de comunicação pode indicar futuras demandas por serviços de agência."
+      "justificativa": "Embora o objeto seja para formação de comissão, a natureza do credenciamento em áreas de comunicação pode indicar futuras demandas por serviços de agência.",
+      "link_edital": "https://transparencia.caurs.gov.br/licitacoes-depublicidade/"
     },
     {
       "id": "dd4b64d96dd017d6ced8a371aceb4c47",
@@ -613,6 +615,40 @@
       "relevance_score": 8,
       "categoria": "Marketing Digital",
       "justificativa": "Este contrato representa uma oportunidade significativa devido ao alto valor estimado e ao escopo focado em comunicação digital, alinhado com as competências de uma agência especializada."
+    },
+    {
+      "id": "813e892a211fce66ec6c74e463b57f81",
+      "orgao": "Corumbá",
+      "ambito": "Municipal – Corumbá/MS",
+      "objeto": "Contratação de serviços de comunicação digital para divulgação de atividades da Fundação de Meio Ambiente do Pantanal (FMAP).",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/5003207/2026-04-14/b87e5dd2892cb0370074befb2efa30206067074f.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "A licitação foca em comunicação digital, com pontuação específica para engajamento de moradores, indicando um escopo alinhado com as capacidades de marketing digital e social de uma agência.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "02a30b82fcad3ca0f66df7406718a4c4",
+      "orgao": "Cícero Dantas",
+      "ambito": "Municipal – Cícero Dantas/BA",
+      "objeto": "Regulamentação da produção, utilização e divulgação institucional de imagens, vídeos e registros audiovisuais de crianças e adolescentes nas redes sociais da Secretaria Municipal de Educação.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/2907806/2026-04-14/6bde93ba0cf5a91794b10e73f5a451ef3dfc4e0b.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "A licitação foca na gestão de conteúdo audiovisual e redes sociais para a Secretaria de Educação, um nicho estratégico para agências com expertise em marketing digital e comunicação para o setor público.",
+      "tipo_aviso": "oportunidade"
     },
     {
       "id": "ea6d347aeafce61452ad19ebd797dc09",
@@ -721,7 +757,25 @@
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
-      "justificativa": "Embora o foco seja publicidade legal, a natureza do serviço em veículos de massa abre portas para serviços de comunicação mais amplos."
+      "justificativa": "Embora o foco seja publicidade legal, a natureza do serviço em veículos de massa abre portas para serviços de comunicação mais amplos.",
+      "link_edital": "https://www.gov.br/pncp/pt-br"
+    },
+    {
+      "id": "e09a9688bd1022eaee5d577e5df2e1f8",
+      "orgao": "Rondonópolis",
+      "ambito": "Municipal – Rondonópolis/MT",
+      "objeto": "Prestação de serviços de comunicação digital institucional, incluindo gestão de site, redes sociais, hospedagem e suporte técnico.",
+      "modalidade": "Dispensa de Licitação",
+      "valor_estimado": 48000.0,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-04-14",
+      "fonte_url": "https://data.queridodiario.ok.org.br/5107602/2026-04-14/f7e16057416c7962fbd8a62bfe8c508f010fb6a5.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 6,
+      "categoria": "Marketing Digital",
+      "justificativa": "O escopo abrange gestão de presença online e infraestrutura, alinhado com as competências centrais de agências de marketing digital.",
+      "tipo_aviso": "oportunidade"
     },
     {
       "id": "27e7c2ec9c18af78cbb89b4e744c77d0",
@@ -750,7 +804,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-13",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-699171594",
-      "link_edital": null,
+      "link_edital": "https://www.portalcr2.com.br/entidade/camaragibe",
       "fonte": "DOU",
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
@@ -811,7 +865,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-13",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-concorrencia-n-90001/2025-699229083",
-      "link_edital": null,
+      "link_edital": "https://www.gov.br/suframa/pt-br/acesso-a-informacao/licitacoes-contratos/arquivos-concorrencia/ata-da-4a-sessao-e-lista-de-presenca.pdf",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Publicidade & Propaganda",
@@ -842,7 +896,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-09",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-698477855",
-      "link_edital": null,
+      "link_edital": "https://www.bcb.gov.br/acessoinformacao/licitacoes",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Comunicação Institucional",
@@ -858,7 +912,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-09",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/avisos-de-licitacao-698392846",
-      "link_edital": null,
+      "link_edital": "https://www.licitademervallobao.com.br",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Comunicação Institucional",
@@ -961,6 +1015,23 @@
       "justificativa": "O objeto abrange integralmente os serviços de uma agência de propaganda, com valor expressivo para o porte do município."
     },
     {
+      "id": "d3f2ceda203ce6a8a64ca655cb74f922",
+      "orgao": "SSPDF",
+      "ambito": "Estadual – DF",
+      "objeto": "Contratação de empresa para serviços de comunicação digital para o Departamento de Trânsito do Distrito Federal (DETRAN/DF).",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": "2026-05-28",
+      "data_publicacao": "2026-04-07",
+      "fonte_url": "https://dodf.df.gov.br/dodf/materia/visualizar?coMateria=586850",
+      "link_edital": null,
+      "fonte": "DODF",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "O escopo focado em comunicação digital para um órgão de trânsito estadual representa uma oportunidade clara para agências com expertise em campanhas de conscientização e engajamento online.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "30fd5bcea39a26a1ffb808c870beabb3",
       "orgao": "MUNICIPIO DE PINDORAMA",
       "ambito": "Municipal – Pindorama/SP",
@@ -1002,7 +1073,7 @@
       "prazo_proposta": null,
       "data_publicacao": "2026-04-07",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-697920813",
-      "link_edital": null,
+      "link_edital": "https://www.gov.br/compras/pt-br",
       "fonte": "DOU",
       "relevance_score": 7,
       "categoria": "Conteúdo & Redes Sociais",
@@ -1336,6 +1407,23 @@
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "É uma oportunidade robusta para agências que buscam contratos de publicidade institucional com órgãos públicos de médio porte."
+    },
+    {
+      "id": "62f56a8093ee907ce41be8e2272eb6f8",
+      "orgao": "ESTADO DO RIO DE JANEIRO",
+      "ambito": "Municipal – Rio de Janeiro/RJ",
+      "objeto": "Contratação de serviços de comunicação institucional para prospecção, planejamento, desenvolvimento, implementação, manutenção e monitoramento de soluções de comunicação, incluindo relacionamento com imprensa e formadores de opinião, e atuação em relações públicas em âmbitos regional, nacional e internacional. Abrange também a criação e execução técnica de projetos, ações, produtos e materiais de comunicação institucional.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 3837333.33,
+      "prazo_proposta": "2026-05-08",
+      "data_publicacao": "2026-01-13",
+      "fonte_url": "https://pncp.gov.br/app/editais/42498600000171/2026/122",
+      "link_edital": null,
+      "fonte": "PNCP",
+      "relevance_score": 8,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "O escopo amplo e o valor estimado significativo indicam uma oportunidade robusta para agências com expertise em comunicação institucional e relações públicas.",
+      "tipo_aviso": "oportunidade"
     }
   ]
 }
