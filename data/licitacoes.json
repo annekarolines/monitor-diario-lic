@@ -28,9 +28,10 @@
       "data_publicacao": "2026-04-16",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-intencao-de-anulacao-do-certame-e-prazo-para-manifestacao-700169629",
       "fonte": "DOU",
-      "relevance_score": 7,
-      "categoria": "Comunicação Institucional",
-      "justificativa": "O objeto foca em comunicação institucional, um serviço central para agências de comunicação com expertise em relacionamento e imagem de grandes instituições."
+      "relevance_score": 0,
+      "categoria": null,
+      "justificativa": "",
+      "tipo_aviso": "anulação"
     },
     {
       "id": "05ab69778ee1f453af010e4c78567592",
