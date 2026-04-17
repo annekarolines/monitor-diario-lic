@@ -683,6 +683,25 @@ def _extract_edital_link(text: str) -> str:
     if not text:
         return None
 
+    # -----------------------------------------------------------------------
+    # Pré-processamento: o DOU quebra URLs longas inserindo espaços
+    # Ex: "https://www.novaguarita. mt.gov.br/..." → remove espaços dentro de URLs
+    # -----------------------------------------------------------------------
+    # Caso 1: espaço após protocolo  "https:// domain.tld/..."
+    text = re.sub(r"(https?://)\s+(\S)", r"\1\2", text)
+    # Caso 2: espaço antes de componente de domínio  "https://foo. bar.gov.br/path"
+    text = re.sub(
+        r"(https?://\S*)\.\s+([a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,4}/\S*)",
+        r"\1.\2",
+        text,
+    )
+    # Caso 3: www sem protocolo com espaço  "www.foo. bar.gov.br/..."
+    text = re.sub(
+        r"(\bwww\.[a-zA-Z0-9][\w\-]*)\.\s+([a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,4}/\S*)",
+        r"\1.\2",
+        text,
+    )
+
     # 1. URLs com protocolo
     urls_with_proto = re.findall(r"https?://[^\s<>\"'()\[\]]+", text)
     # 2. URLs sem protocolo: www.<algo>.<tld>/... — exclui emails (sem @)
@@ -810,6 +829,10 @@ def normalize_dou_item(item: dict) -> dict:
         r"Sess[aã]o[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
         r"DATA DA SESS[AÃ]O[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
         r"Entrega das Propostas[^:]*?:\s*(?:a partir de\s*)?(\d{2}/\d{2}/\d{4})",
+        r"Entrega de envelopes[^:]*?:\s*[^,]{0,30}?(\d{2}/\d{2}/\d{4})",
+        r"Data\s+e\s+hor[áa]rio[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Data\s+da\s+[Ss]ess[aã]o[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Data\s+de\s+[Aa]bertura[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
         r"(\d{2}/\d{2}/\d{4}).*?[àas]\s*\d{1,2}h",   # fallback: data seguida de hora
     ]
     # Meses em português para datas por extenso (ex: "15 de junho de 2026")
@@ -1251,6 +1274,28 @@ def normalize_querido_diario_item(gazette: dict) -> dict:
     if not fonte_url and territory_id and pub_date:
         fonte_url = f"https://queridodiario.ok.org.br/{territory_id}/{pub_date}"
 
+    # Link do edital: tenta extrair URL de portal de compras dos trechos do diário
+    link_edital = _extract_edital_link(objeto)
+
+    # Prazo: tenta extrair dos trechos (mesmo regex do DOU)
+    _prazo_qd_patterns = [
+        r"Recebimento[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Abertura das Propostas[^:]*?:\s*(?:dia\s*)?(\d{2}/\d{2}/\d{4})",
+        r"Sess[aã]o[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Entrega das Propostas[^:]*?:\s*(?:a partir de\s*)?(\d{2}/\d{2}/\d{4})",
+        r"Entrega de envelopes[^:]*?:\s*[^,]{0,30}?(\d{2}/\d{2}/\d{4})",
+        r"Data\s+e\s+hor[áa]rio[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Data\s+da\s+[Ss]ess[aã]o[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"Data\s+de\s+[Aa]bertura[^:]*?:\s*(\d{2}/\d{2}/\d{4})",
+        r"(\d{2}/\d{2}/\d{4}).*?[àas]\s*\d{1,2}h",
+    ]
+    prazo_qd = None
+    for pat in _prazo_qd_patterns:
+        m = re.search(pat, objeto, re.IGNORECASE)
+        if m:
+            prazo_qd = _iso_from_br(m.group(1))
+            break
+
     return {
         "_source": "qd",
         "orgaoEntidade": {
@@ -1267,8 +1312,9 @@ def normalize_querido_diario_item(gazette: dict) -> dict:
         "modalidadeNome":           modalidade,
         "valorTotalEstimado":       valor,
         "dataPublicacaoPncp":       pub_date,
-        "dataEncerramentoProposta": None,
+        "dataEncerramentoProposta": prazo_qd,
         "linkSistemaOrigem":        fonte_url,
+        "_link_edital":             link_edital,
         "_qd_territory_id":         territory_id,
     }
 
