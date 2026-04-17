@@ -107,30 +107,32 @@ DOU_ART_TYPES = {
     "aviso de credenciamento",
     "aviso",
 }
-# artTypes que NÃO são novas oportunidades: suspensões, anulações, extratos, ARPs já assinadas
-DOU_ART_TYPES_EXCLUDE = {
+# artTypes informativos que NÃO são novas oportunidades, mas entram no painel com cor diferente
+# (suspensões, anulações, ARPs já assinadas, reaberturas de prazo)
+DOU_ART_TYPES_SECONDARY = {
     "aviso de suspensão",
     "aviso de suspensao",
-    "aviso de reabertura",          # reabertura já está no sistema
+    "aviso de reabertura",
     "aviso de intenção de anulação",
     "aviso de intencao de anulacao",
+    "aviso de registro de preços",
+    "aviso de registro de precos",
+}
+# artTypes descartados completamente — extratos e resultados não têm valor informativo
+DOU_ART_TYPES_EXCLUDE = {
     "extrato de termo aditivo",
     "extrato de contrato",
     "extrato",
-    "aviso de registro de preços",  # ARP já assinada, não é abertura
-    "aviso de registro de precos",
     "resultado de julgamento",
     "resultado de licitação",
 }
-# Frases de início de artigo que indicam NÃO ser uma nova licitação
+# Frases de início de artigo que indicam NÃO ser uma nova licitação (nem aviso secundário)
 DOU_CONTENT_EXCLUDE_PREFIXES = (
     "extrato de termo aditivo",
     "extrato de contrato",
     "resultado de julgamento",
     "homologação",
     "adjudicação",
-    "revogação",
-    "anulação",
 )
 
 # Querido Diário — diários oficiais municipais
@@ -789,7 +791,29 @@ def normalize_dou_item(item: dict) -> dict:
         "_link_edital":             link_edital,   # URL direta para o edital (PNCP/compras)
         "_dou_art_type":            art_type,
         "_dou_content_full":        content_clean[:2000],
+        "_tipo_aviso":              _detect_tipo_aviso(art_type),
     }
+
+
+def _detect_tipo_aviso(art_type: str) -> str:
+    """
+    Classifica o artType do DOU em categoria de aviso:
+      "oportunidade" → novo edital/licitação (fluxo normal + Gemini)
+      "suspensão"    → aviso de suspensão de licitação em andamento
+      "anulação"     → aviso de anulação ou revogação
+      "arp"          → aviso de registro de preços (contrato já assinado)
+      "reabertura"   → aviso de reabertura de prazo
+    """
+    norm = normalize_text(art_type)
+    if "suspens" in norm:
+        return "suspensão"
+    if "anulac" in norm or "revog" in norm:
+        return "anulação"
+    if "registro de prec" in norm:
+        return "arp"
+    if "reabertura" in norm:
+        return "reabertura"
+    return "oportunidade"
 
 
 def _enrich_dou_with_pncp(item: dict) -> dict:
@@ -908,14 +932,19 @@ def _enrich_dou_with_pncp(item: dict) -> dict:
 
 def _is_relevant_dou_type(art_type: str) -> bool:
     """
-    Retorna True se o artType do DOU indica uma NOVA licitação/edital.
-    Exclui explicitamente suspensões, anulações, extratos e ARPs já assinadas.
+    Retorna True se o artType do DOU é relevante para o painel:
+    - Novas oportunidades (licitações, pregões, etc.)  → Gemini + cor normal
+    - Avisos secundários (suspensões, anulações, ARPs) → sem Gemini + cor diferente
+    Retorna False apenas para extratos e resultados sem valor informativo.
     """
     norm = normalize_text(art_type)
-    # Bloqueia artTypes que não são novas oportunidades
+    # Descarta completamente: extratos e resultados
     if norm in {normalize_text(t) for t in DOU_ART_TYPES_EXCLUDE}:
         return False
-    # Verifica contra lista de tipos relevantes
+    # Permite avisos secundários (entram com tipo_aviso diferente)
+    if norm in {normalize_text(t) for t in DOU_ART_TYPES_SECONDARY}:
+        return True
+    # Verifica contra lista de tipos primários (novas licitações)
     if norm in {normalize_text(t) for t in DOU_ART_TYPES}:
         return True
     # Cobre variantes como "Aviso de Licitação-Pregão", "Aviso de Licitação-Concorrência"
@@ -1025,7 +1054,7 @@ def fetch_dou(data_ini: date, data_fim: date) -> list:
             current += timedelta(days=1)
             continue
 
-        # Filtra apenas artTypes relacionados a licitação + keyword match
+        # Filtra artTypes relevantes (novas oportunidades + avisos secundários) + keyword match
         relevant = []
         for it in items:
             art_type = it.get("artType", "") or ""
@@ -1037,13 +1066,17 @@ def fetch_dou(data_ini: date, data_fim: date) -> list:
                 it.get("content", "") or "",
                 it.get("hierarchyStr", "") or "",
             ])
-            # Bloqueia artigos que pelo conteúdo não são novas oportunidades
-            # (extratos, suspensões, resultados — independente do artType genérico "aviso")
-            titulo_norm = normalize_text(it.get("titulo", "") or "")
-            if titulo_norm.startswith(
-                tuple(normalize_text(p) for p in DOU_CONTENT_EXCLUDE_PREFIXES)
-            ):
-                continue
+            # Itens secundários (suspensão, anulação, ARP, reabertura) não passam pelo
+            # filtro de conteúdo — eles já são identificados pelo artType.
+            # Itens primários: bloqueia pelo conteúdo extratos, homologações, adjudicações.
+            art_norm = normalize_text(art_type)
+            is_secondary = art_norm in {normalize_text(t) for t in DOU_ART_TYPES_SECONDARY}
+            if not is_secondary:
+                titulo_norm = normalize_text(it.get("titulo", "") or "")
+                if titulo_norm.startswith(
+                    tuple(normalize_text(p) for p in DOU_CONTENT_EXCLUDE_PREFIXES)
+                ):
+                    continue
             if keyword_match(texto):
                 relevant.append(it)
 
@@ -1541,24 +1574,34 @@ def analyze_with_gemini(item: dict, retries=3) -> dict:
 # ---------------------------------------------------------------------------
 
 def _filter_candidates(raw_items: list, existing_ids: set) -> list:
-    """Pré-filtro: keyword + valor mínimo + prazo válido + deduplicação."""
+    """Pré-filtro: keyword + valor mínimo + prazo válido + deduplicação.
+
+    Itens secundários (suspensões, anulações, ARPs — tipo_aviso != "oportunidade")
+    ignoram filtros de valor e prazo: esses avisos raramente têm valor estimado
+    e não têm data de encerramento de proposta.
+    """
     hoje_iso = date.today().isoformat()
     candidates = []
     for item in raw_items:
-        objeto = item.get("objetoCompra", "")
-        url    = build_pncp_url(item)
-        lid    = licitacao_id(url)
+        objeto     = item.get("objetoCompra", "")
+        url        = build_pncp_url(item)
+        lid        = licitacao_id(url)
+        tipo_aviso = item.get("_tipo_aviso", "oportunidade")
 
         if lid in existing_ids:
             continue
         if not keyword_match(objeto):
             continue
-        valor = item.get("valorTotalEstimado")
-        if valor is not None and float(valor) < MIN_VALOR:
-            continue
-        prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
-        if prazo_raw and prazo_raw[:10] < hoje_iso:
-            continue
+
+        # Filtros de valor e prazo aplicados apenas a novas oportunidades
+        if tipo_aviso == "oportunidade":
+            valor = item.get("valorTotalEstimado")
+            if valor is not None and float(valor) < MIN_VALOR:
+                continue
+            prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
+            if prazo_raw and prazo_raw[:10] < hoje_iso:
+                continue
+
         candidates.append(item)
     return candidates
 
@@ -1695,21 +1738,55 @@ def run():
         return
 
     new_licitacoes = []
+    needs_gemini_delay = False   # evita delay antes do primeiro call Gemini
 
     for i, item in enumerate(all_candidates):
-        fonte    = item.get("_source", "pncp").upper()
-        orgao    = item.get("orgaoEntidade", {}).get("razaoSocial", "—")
-        obj_raw  = item.get("objetoCompra", "")
-        url      = build_pncp_url(item)
+        fonte      = item.get("_source", "pncp").upper()
+        orgao      = item.get("orgaoEntidade", {}).get("razaoSocial", "—")
+        obj_raw    = item.get("objetoCompra", "")
+        url        = build_pncp_url(item)
+        tipo_aviso = item.get("_tipo_aviso", "oportunidade")
 
         print(f"   [{i+1}/{len(all_candidates)}] [{fonte}] {orgao[:50]}...")
         print(f"              {obj_raw[:65]}...")
 
-        if i > 0:
+        # -------------------------------------------------------------------
+        # Itens secundários (suspensão, anulação, ARP, reabertura):
+        # entram no painel sem análise Gemini — cor diferente sinaliza no UI.
+        # -------------------------------------------------------------------
+        if tipo_aviso != "oportunidade":
+            prazo_raw = item.get("dataEncerramentoProposta") or item.get("dataAberturaProposta")
+            prazo     = prazo_raw[:10] if prazo_raw else None
+            licitacao = {
+                "id":              licitacao_id(url),
+                "orgao":           orgao,
+                "ambito":          parse_ambito(item),
+                "objeto":          obj_raw[:200],
+                "modalidade":      item.get("modalidadeNome", "Não informada"),
+                "valor_estimado":  item.get("valorTotalEstimado"),
+                "prazo_proposta":  prazo,
+                "data_publicacao": item.get("dataPublicacaoPncp", hoje.isoformat())[:10],
+                "fonte_url":       url,
+                "link_edital":     item.get("_link_edital"),
+                "fonte":           fonte,
+                "relevance_score": 0,
+                "categoria":       None,
+                "justificativa":   "",
+                "tipo_aviso":      tipo_aviso,
+            }
+            new_licitacoes.append(licitacao)
+            print(f"           → {tipo_aviso.upper()} (sem Gemini)\n")
+            continue
+
+        # -------------------------------------------------------------------
+        # Análise Gemini para novas oportunidades
+        # -------------------------------------------------------------------
+        if needs_gemini_delay:
             time.sleep(GEMINI_DELAY)
 
         try:
             analysis = analyze_with_gemini(item)
+            needs_gemini_delay = True
 
             if not analysis.get("relevante", False):
                 print("           → Não relevante\n")
@@ -1740,6 +1817,7 @@ def run():
                 "relevance_score": score,
                 "categoria":       analysis.get("categoria", "Comunicação Institucional"),
                 "justificativa":   analysis.get("justificativa", ""),
+                "tipo_aviso":      "oportunidade",
             }
             new_licitacoes.append(licitacao)
             print(f"           → {licitacao['categoria']} | Score: {score}/10\n")

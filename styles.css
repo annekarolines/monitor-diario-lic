@@ -425,6 +425,26 @@ body {
 }
 
 /* ===================================================
+   tipo_aviso: cards secundários (suspensões, anulações, ARPs, reaberturas)
+   Cor diferente sinaliza que NÃO é nova oportunidade.
+   =================================================== */
+
+.card[data-tipo-aviso="suspensão"]  { --card-accent: #f59e0b; background: rgba(245,158,11,.025); }
+.card[data-tipo-aviso="anulação"]   { --card-accent: #dc2626; background: rgba(220,38,38,.025); }
+.card[data-tipo-aviso="arp"]        { --card-accent: #0891b2; background: rgba(8,145,178,.025); }
+.card[data-tipo-aviso="reabertura"] { --card-accent: #7c3aed; background: rgba(124,58,237,.025); }
+
+/* Badge de tipo_aviso (substituição da badge de categoria para secundários) */
+.tipo-aviso-badge                      { background: var(--surface); color: var(--text-muted); }
+.tipo-aviso-badge.tipo-aviso-suspensão { background: rgba(245,158,11,.12); color: #b45309; }
+.tipo-aviso-badge.tipo-aviso-anulação  { background: rgba(220,38,38,.12);  color: #b91c1c; }
+.tipo-aviso-badge.tipo-aviso-arp       { background: rgba(8,145,178,.12);  color: #0e7490; }
+.tipo-aviso-badge.tipo-aviso-reabertura { background: rgba(124,58,237,.12); color: #6d28d9; }
+
+/* Leve redução de opacidade no título para diferenciar do card de oportunidade */
+.card[data-tipo-aviso] .card-title { color: var(--text-secondary); }
+
+/* ===================================================
    Section headers
    =================================================== */
 

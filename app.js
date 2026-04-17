@@ -161,28 +161,53 @@ function renderPagination(page, total) {
   bar.appendChild(next);
 }
 
+function tipoAvisoLabel(tipo) {
+  const labels = {
+    "suspensão": "⚠ Suspensão",
+    "anulação":  "✕ Anulação",
+    "arp":       "📋 ARP",
+    "reabertura": "↩ Reabertura",
+  };
+  return labels[tipo] || tipo;
+}
+
 function buildCard(template, l) {
   const clone = template.content.cloneNode(true);
   const card  = clone.querySelector(".card");
 
-  card.dataset.cat = l.categoria || "";
+  const tipoAviso = l.tipo_aviso || "oportunidade";
+  const isSecondary = tipoAviso !== "oportunidade";
 
-  // Top row
-  card.querySelector(".card-badge").textContent = CATEGORY_LABELS[l.categoria] || l.categoria || "—";
-  card.querySelector(".card-date").textContent  = formatDate(l.data_publicacao);
+  card.dataset.cat = l.categoria || "";
+  if (isSecondary) card.dataset.tipoAviso = tipoAviso;
+
+  // Top row — badge: tipo_aviso badge para secundários, categoria para oportunidades
+  const badgeEl = card.querySelector(".card-badge");
+  if (isSecondary) {
+    badgeEl.textContent = tipoAvisoLabel(tipoAviso);
+    badgeEl.classList.add("tipo-aviso-badge", `tipo-aviso-${tipoAviso}`);
+  } else {
+    badgeEl.textContent = CATEGORY_LABELS[l.categoria] || l.categoria || "—";
+  }
+  card.querySelector(".card-date").textContent = formatDate(l.data_publicacao);
 
   const scoreEl = card.querySelector(".card-score");
-  const score   = l.relevance_score || 0;
-  scoreEl.textContent = `${score}/10`;
-  if (score >= 8)      scoreEl.classList.add("high");
-  else if (score >= 6) scoreEl.classList.add("med");
+  if (isSecondary) {
+    // Itens secundários não têm score — oculta o indicador
+    scoreEl.style.display = "none";
+  } else {
+    const score = l.relevance_score || 0;
+    scoreEl.textContent = `${score}/10`;
+    if (score >= 8)      scoreEl.classList.add("high");
+    else if (score >= 6) scoreEl.classList.add("med");
+  }
 
   // Título e objeto
-  card.querySelector(".card-title").textContent   = l.orgao   || "Órgão não informado";
-  card.querySelector(".card-summary").textContent = l.objeto  || "";
+  card.querySelector(".card-title").textContent   = l.orgao  || "Órgão não informado";
+  card.querySelector(".card-summary").textContent = l.objeto || "";
 
   // Meta: âmbito + modalidade
-  card.querySelector(".card-ambito").textContent    = l.ambito    || "—";
+  card.querySelector(".card-ambito").textContent     = l.ambito    || "—";
   card.querySelector(".card-modalidade").textContent = l.modalidade || "—";
 
   // Financeiro
@@ -195,6 +220,11 @@ function buildCard(template, l) {
   card.querySelector(".card-justificativa").textContent = l.justificativa || "";
   const toggle = card.querySelector(".insights-toggle");
   const body   = card.querySelector(".insights-body");
+  if (isSecondary) {
+    // Para secundários, muda o label do accordion
+    const toggleSpan = toggle.querySelector("span");
+    if (toggleSpan) toggleSpan.textContent = "Detalhes do aviso";
+  }
   toggle.addEventListener("click", () => {
     const expanded = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!expanded));
