@@ -231,8 +231,29 @@ function buildCard(template, l) {
     body.hidden = expanded;
   });
 
-  // Link
-  card.querySelector(".card-link").href = l.fonte_url || "#";
+  // Links: "Ver edital" (primário, se link_edital disponível) + "Ver aviso" (secundário)
+  const linkEdital = card.querySelector(".card-link-edital");
+  const linkFonte  = card.querySelector(".card-link-fonte");
+  const fonteLabel = linkFonte.querySelector(".card-link-label");
+
+  if (l.link_edital && l.link_edital !== l.fonte_url) {
+    // Dois links distintos: edital direto + aviso original
+    linkEdital.href = l.link_edital;
+    linkEdital.hidden = false;
+    linkFonte.href = l.fonte_url || "#";
+    // Label adaptado por fonte
+    fonteLabel.textContent =
+      l.fonte === "DOU"  ? "Ver aviso no DOU" :
+      l.fonte === "DODF" ? "Ver matéria no DODF" :
+      "Ver na fonte";
+    linkFonte.classList.add("secondary");
+  } else {
+    // Sem link_edital separado — botão único aponta para a fonte
+    linkEdital.hidden = true;
+    linkFonte.href = l.fonte_url || "#";
+    fonteLabel.textContent = "Ver edital completo";
+    linkFonte.classList.remove("secondary");
+  }
 
   return clone;
 }

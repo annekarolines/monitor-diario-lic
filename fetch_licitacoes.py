@@ -253,6 +253,7 @@ Dados da licitação:
 - Modalidade: {modalidade}
 - Valor estimado: {valor}
 - Data de publicação: {data}
+- Contexto adicional (trecho do aviso oficial): {contexto}
 
 Estrutura exata do JSON:
 {{
@@ -264,15 +265,18 @@ Estrutura exata do JSON:
 }}
 
 Regras:
+- Use o "Contexto adicional" como fonte primária quando disponível — ele contém o texto do aviso publicado. O "Objeto" sozinho pode estar truncado.
+- NUNCA invente valores, prazos ou escopo ausentes do contexto. Se valor não foi informado, considere na análise mas não afirme números hipotéticos.
 - "relevante": true se o objeto envolver publicidade, marketing digital, redes sociais, conteúdo criativo, identidade visual ou comunicação institucional. false se for equipamentos, assessoria de imprensa sem publicidade, radiocomunicação, ou fora do escopo de comunicação criativa.
 - "categoria": exatamente uma de: "Publicidade & Propaganda" | "Marketing Digital" | "Conteúdo & Redes Sociais" | "Identidade Visual & Criação" | "Comunicação Institucional"
-- "objeto_resumido": máximo 2 frases, linguagem clara, sem juridiquês
-- "justificativa": máximo 1 frase, ângulo estratégico (porte do contrato, escopo, perfil do órgão)
+- "objeto_resumido": máximo 2 frases, linguagem clara, sem juridiquês. Inclua aspectos distintivos do escopo (ex: campanhas específicas, canais-alvo, região, prazo) quando aparecerem no contexto.
+- "justificativa": máximo 1 frase, ângulo estratégico e ESPECÍFICO à licitação em questão (porte do contrato, escopo concreto, perfil do órgão, diferencial observado no contexto). Evite frases genéricas tipo "oportunidade para agências especializadas".
 - "score_relevancia": 1-10 onde:
     9-10 = valor > R$500k, escopo amplo (publicidade + digital + conteúdo)
     7-8  = valor > R$100k, escopo claro em comunicação digital ou publicidade
     5-6  = valor < R$100k ou escopo parcial (só redes, só criação pontual)
     1-4  = valor baixo, escopo restrito, ou serviço muito específico
+  Se o valor não foi informado, estime o porte pelo perfil do órgão (ministério federal = maior, prefeitura pequena = menor) e pelo escopo descrito.
 
 Responda APENAS com o JSON, sem texto adicional, sem blocos de código."""
 
@@ -628,13 +632,23 @@ def dou_date(d: date) -> str:
 
 
 def _extract_valor_dou(text: str):
-    """Tenta extrair valor monetário do texto do DOU. Retorna float ou None."""
+    """Tenta extrair valor monetário do texto do DOU. Retorna float ou None.
+
+    Padrões suportados (por prioridade):
+      - "Valor Estimado: R$ 1.500.000,00"
+      - "Valor Global de R$ 1.500.000,00"
+      - "Importância de R$ 1.500.000,00"
+      - "R$ 1.500.000,00"
+      - "1.500.000,00 (R$)"
+    """
     if not text:
         return None
-    # Padrões: R$ 1.500.000,00 | R$1500000.00 | 1.500.000,00 (R$) | valor global de R$ ...
+    # Padrões por especificidade (mais específicos primeiro para melhor precisão)
     patterns = [
-        r"R\$\s*([\d\.]+,\d{2})",
+        r"valor\s+(?:estimado|global|total|m[aá]ximo|de\s+refer[êe]ncia)[^\d]{0,20}R?\$?\s*([\d\.]+,\d{2})",
+        r"import[âa]ncia\s+(?:total\s+)?de\s*R?\$?\s*([\d\.]+,\d{2})",
         r"valor[^\d]{0,30}([\d\.]+,\d{2})",
+        r"R\$\s*([\d\.]+,\d{2})",
         r"([\d\.]+,\d{2})\s*\(R\$",
     ]
     for pat in patterns:
@@ -648,6 +662,47 @@ def _extract_valor_dou(text: str):
             except ValueError:
                 pass
     return None
+
+
+def _extract_edital_link(text: str) -> str:
+    """
+    Extrai a URL mais provável do edital dentro do texto do aviso DOU.
+
+    Estratégia: captura todas as URLs e as ordena por prioridade.
+    URLs do próprio in.gov.br são descartadas (são o aviso, não o edital).
+    Prioridade: PNCP > compras.gov.br > comprasnet > gov.br/<ministério>
+                > portais estaduais/municipais (.gov.br genéricos)
+                > qualquer outro link.
+    Retorna a URL de maior prioridade ou None se nada for encontrado.
+    """
+    if not text:
+        return None
+
+    # Captura toda URL http/https, termina em whitespace ou caracteres "ruins"
+    urls = re.findall(r"https?://[^\s<>\"'()\[\]]+", text)
+    if not urls:
+        return None
+
+    def priority(url: str) -> int:
+        u = url.lower()
+        if "in.gov.br" in u:                    return 99   # exclui — é o próprio aviso
+        if "pncp.gov.br" in u:                  return 0
+        if "compras.gov.br" in u:               return 1
+        if "comprasnet.gov.br" in u:            return 2
+        # gov.br/<ministerio>/... (ex: gov.br/mds/pt-br/..., gov.br/mec/...)
+        if re.match(r"https?://(?:www\.)?gov\.br/[\w-]+/", u): return 3
+        if ".gov.br" in u:                      return 4
+        if ".org.br" in u:                      return 5
+        return 6
+
+    # Ordena por prioridade e pega o primeiro (excluindo os do próprio aviso)
+    sorted_urls = sorted(urls, key=priority)
+    best = sorted_urls[0]
+    if priority(best) >= 99:
+        return None
+
+    # Limpa pontuação/sufixo indesejado
+    return best.rstrip(".,;:)\"'")
 
 
 def normalize_dou_item(item: dict) -> dict:
@@ -745,19 +800,9 @@ def normalize_dou_item(item: dict) -> dict:
             break
 
     # -----------------------------------------------------------------------
-    # Link do edital: PNCP ou portal gov.br mencionado no texto
+    # Link do edital: procura URL no texto (PNCP, compras.gov, portais dos órgãos)
     # -----------------------------------------------------------------------
-    _edital_link_patterns = [
-        r"https?://pncp\.gov\.br/\S+",
-        r"https?://www\.gov\.br/compras\S*",
-        r"https?://comprasnet\.gov\.br/\S+",
-    ]
-    link_edital = None
-    for pat in _edital_link_patterns:
-        m = re.search(pat, content_clean, re.IGNORECASE)
-        if m:
-            link_edital = m.group(0).rstrip(".,;)")
-            break
+    link_edital = _extract_edital_link(content_clean)
 
     # URL do artigo no DOU (link primário — acesso ao aviso oficial)
     if url_title:
@@ -1519,11 +1564,17 @@ def fetch_dodf(data_ini: date, data_fim: date) -> list:
 
 def analyze_with_gemini(item: dict, retries=3) -> dict:
     """Analisa licitação com Gemini e retorna JSON estruturado."""
-    orgao     = item.get("orgaoEntidade", {}).get("razaoSocial", "Órgão não informado")
-    objeto    = item.get("objetoCompra", "Objeto não informado")
+    orgao      = item.get("orgaoEntidade", {}).get("razaoSocial", "Órgão não informado")
+    objeto     = item.get("objetoCompra", "Objeto não informado")
     modalidade = item.get("modalidadeNome", "Não informada")
-    valor     = format_valor(item.get("valorTotalEstimado"))
-    data      = item.get("dataPublicacaoPncp", "")[:10]
+    valor      = format_valor(item.get("valorTotalEstimado"))
+    data       = item.get("dataPublicacaoPncp", "")[:10]
+
+    # Contexto adicional: conteúdo completo do aviso DOU (quando disponível).
+    # Dá ao Gemini material concreto para análise específica — sem contexto,
+    # o modelo tende a produzir justificativas genéricas.
+    contexto_raw = item.get("_dou_content_full", "") or ""
+    contexto = contexto_raw[:1500] if contexto_raw else "(não disponível)"
 
     prompt = SYSTEM_PROMPT + "\n\n" + ANALYSIS_PROMPT.format(
         orgao=orgao,
@@ -1531,6 +1582,7 @@ def analyze_with_gemini(item: dict, retries=3) -> dict:
         modalidade=modalidade,
         valor=valor,
         data=data,
+        contexto=contexto,
     )
 
     for attempt in range(retries):

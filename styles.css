@@ -404,7 +404,15 @@ body {
   line-height: 1.5;
 }
 
-/* Card link */
+/* Card links — container */
+.card-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+}
+
 .card-link {
   display: inline-flex;
   align-items: center;
@@ -414,7 +422,6 @@ body {
   color: var(--green);
   text-decoration: none;
   transition: color var(--transition), gap var(--transition);
-  margin-top: auto;
 }
 
 .card-link svg { width: 14px; height: 14px; flex-shrink: 0; }
@@ -422,6 +429,22 @@ body {
 .card-link:hover {
   color: var(--gold);
   gap: 10px;
+}
+
+/* Link secundário (aviso original quando edital direto está disponível) */
+.card-link.secondary {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: .75rem;
+}
+
+.card-link.secondary:hover {
+  color: var(--text-secondary);
+}
+
+/* Link primário de edital recebe destaque leve */
+.card-link-edital {
+  font-weight: 600;
 }
 
 /* ===================================================
