@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-06-08T17:43:51.603628+00:00",
-  "total": 338,
+  "last_updated": "2026-06-09T16:52:00.643941+00:00",
+  "total": 336,
   "licitacoes": [
     {
       "id": "cd1274f23bb05b57b5b90136db382529",
@@ -5712,40 +5712,6 @@
       "relevance_score": 4,
       "categoria": "Identidade Visual & Criação",
       "justificativa": "Embora o valor seja baixo, a licitação foca em identidade visual, um serviço central para agências de comunicação.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "57e06b6bdbe2e2e01747463c60b40136",
-      "orgao": "Monte Alto",
-      "ambito": "Municipal – Monte Alto/SP",
-      "objeto": "Disponibilização de informações sobre ações de limpeza e conservação para a população por meio de canais oficiais de comunicação, como site institucional e redes sociais.",
-      "modalidade": "Aviso de Licitação",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-05-09",
-      "fonte_url": "https://data.queridodiario.ok.org.br/3531308/2026-05-09/7a444f2e650c5d43d0d32b803253c8c5d263e409.pdf",
-      "link_edital": null,
-      "fonte": "QD",
-      "relevance_score": 6,
-      "categoria": "Comunicação Institucional",
-      "justificativa": "A licitação envolve a comunicação institucional de serviços públicos essenciais, abrindo espaço para a agência gerenciar a divulgação e o engajamento da população.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "4fdda7cc4f355c467dde4ceef9106bfd",
-      "orgao": "MUNICIPIO DE NOVA RAMADA",
-      "ambito": "Municipal – Nova Ramada/RS",
-      "objeto": "Contratação de empresa para prestação de serviços de publicidade institucional e de utilidade pública, incluindo divulgação de notícias, comunicados de interesse público e atos oficiais do município.",
-      "modalidade": "Dispensa",
-      "valor_estimado": 21462.96,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-01-03",
-      "fonte_url": "https://pncp.gov.br/app/editais/01611828000149/2025/269",
-      "link_edital": null,
-      "fonte": "PNCP",
-      "relevance_score": 5,
-      "categoria": "Comunicação Institucional",
-      "justificativa": "O escopo abrange a comunicação institucional e a divulgação de atos oficiais, sendo uma oportunidade para agências com expertise em comunicação pública.",
       "tipo_aviso": "oportunidade"
     }
   ]
