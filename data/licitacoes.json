@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-07-14T15:45:20.584711+00:00",
-  "total": 203,
+  "last_updated": "2026-07-15T15:49:39.663747+00:00",
+  "total": 210,
   "licitacoes": [
     {
       "id": "5e0d808beb5aef08359dc19a89fa6544",
@@ -105,6 +105,23 @@
       "tipo_aviso": "oportunidade"
     },
     {
+      "id": "310329fab043b02df8d6bc261130cba8",
+      "orgao": "Várzea da Palma",
+      "ambito": "Municipal – Várzea da Palma/MG",
+      "objeto": "Chamamento público para contratação de serviços de comunicação, com foco em marketing digital, pela Prefeitura de Várzea da Palma.",
+      "modalidade": "Chamamento Público",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-09",
+      "fonte_url": "https://data.queridodiario.ok.org.br/3170800/2026-07-09/b3cb10f85f53a554baa50125683813b65ee0125c.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "O chamamento público indica uma necessidade de modernização da comunicação, com potencial para englobar estratégias digitais e de marketing.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "0f059c7bb10f9ef8be09f86a6b1c988f",
       "orgao": "Caetité",
       "ambito": "Municipal – Caetité/BA",
@@ -153,6 +170,23 @@
       "relevance_score": 7,
       "categoria": "Marketing Digital",
       "justificativa": "A licitação, apesar de não informar o valor estimado, abrange serviços de publicidade e propaganda com foco em marketing digital, alinhando-se diretamente às competências de uma agência de comunicação moderna.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "dc21751609682921b2948c357bb8c12f",
+      "orgao": "Cafezal do Sul",
+      "ambito": "Municipal – Cafezal do Sul/PR",
+      "objeto": "Registro de preços para aquisição de equipamentos audiovisuais para comunicação institucional, eventos e mídias digitais.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": 32993.7,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-09",
+      "fonte_url": "https://data.queridodiario.ok.org.br/4103479/2026-07-09/6b59641bbfc6505e630ad44b422f0cd9d1013563.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 6,
+      "categoria": "Marketing Digital",
+      "justificativa": "Embora o objeto seja a aquisição de equipamentos, o foco em mídias digitais e comunicação institucional abre portas para serviços agregados de gestão e produção de conteúdo.",
       "tipo_aviso": "oportunidade"
     },
     {
@@ -292,6 +326,23 @@
       "tipo_aviso": "oportunidade"
     },
     {
+      "id": "b1d1276bd56c30f50064b5dc779fde33",
+      "orgao": "Formosa do Rio Preto",
+      "ambito": "Municipal – Formosa do Rio Preto/BA",
+      "objeto": "Desenvolvimento e execução da comunicação institucional do governo municipal, com foco na gestão das ações do gabinete do prefeito.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-08",
+      "fonte_url": "https://data.queridodiario.ok.org.br/2911105/2026-07-08/9b3dd428b594a2d55a80e9561cceacdc9c6e48e7.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "A licitação visa fortalecer a imagem e a transparência da gestão municipal, sendo uma oportunidade clara para agências com expertise em comunicação governamental.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "d2d5317c33131a8d65d30ed62d14b183",
       "orgao": "Formosa do Rio Preto",
       "ambito": "Municipal – Formosa do Rio Preto/BA",
@@ -391,6 +442,23 @@
       "relevance_score": 7,
       "categoria": "Marketing Digital",
       "justificativa": "A criação de um estúdio audiovisual para produção de conteúdo EAD indica uma demanda por serviços de produção de vídeo e possivelmente estratégias de marketing digital para distribuição.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "56218327d2b7d3a30f7828984f51bc02",
+      "orgao": "Cunha",
+      "ambito": "Municipal – Cunha/SP",
+      "objeto": "Contratação de empresa para prestação de serviços de direção artística e coordenação técnica de eventos, incluindo planejamento, concepção, supervisão e acompanhamento da implantação de espaços temáticos e identidade visual para o Festival de Inverno 2026 \"Acordes na Serra\".",
+      "modalidade": "Dispensa de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-08",
+      "fonte_url": "https://data.queridodiario.ok.org.br/3513603/2026-07-08/e4d7c8c4335bcf37fcc72b92e74f5810af113fdf.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 6,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "A licitação abrange a criação e coordenação da identidade visual de um festival, um escopo central para agências com expertise em design e branding.",
       "tipo_aviso": "oportunidade"
     },
     {
@@ -496,6 +564,23 @@
       "tipo_aviso": "oportunidade"
     },
     {
+      "id": "20398ab1dc7fd5c6ed4dd58f35235b2c",
+      "orgao": "Laje",
+      "ambito": "Municipal – Laje/BA",
+      "objeto": "Fornecimento de 2.000 unidades de chaveiros institucionais em MDF, personalizados com arte alusiva a evento e aniversário do município.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": 60278.33,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-07",
+      "fonte_url": "https://data.queridodiario.ok.org.br/2918803/2026-07-07/cb89cc931ee7466ce0dc33d05f20f32a42ac09d6.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 5,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "O escopo de personalização e criação de arte para brindes institucionais se alinha com serviços de identidade visual e comunicação, sendo uma oportunidade pontual para a agência.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
       "id": "65b227bb7bc711b0908d3c5fa67e6b19",
       "orgao": "Juranda",
       "ambito": "Municipal – Juranda/PR",
@@ -544,6 +629,40 @@
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O escopo detalhado de serviços de publicidade e comunicação social, incluindo planejamento e veiculação, representa uma oportunidade direta para agências com expertise em campanhas governamentais.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "d0bcebadb5096b39b0fd7f9ad4eabc67",
+      "orgao": "Mossoró",
+      "ambito": "Municipal – Mossoró/RN",
+      "objeto": "Gestão e melhoria de pontos de embarque e desembarque para transporte público e individual, visando maior conforto, segurança e informação aos cidadãos.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-06",
+      "fonte_url": "https://data.queridodiario.ok.org.br/2408003/2026-07-06/c4ed6e636283f3cbe3829fad5e33c6ffaab25040.pdf",
+      "link_edital": null,
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "A licitação foca na melhoria da experiência do usuário e na comunicação com o cidadão, o que pode envolver campanhas informativas e de conscientização, áreas de expertise de agências de comunicação.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "5aa594dcad4490d95fc5ff5d58e61095",
+      "orgao": "Taubaté",
+      "ambito": "Municipal – Taubaté/SP",
+      "objeto": "Catálogo Eletrônico de Padronização de serviços de logística pública integrados ao PNCP.",
+      "modalidade": "Aviso de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-07-06",
+      "fonte_url": "https://data.queridodiario.ok.org.br/3554102/2026-07-06/4dabbbe304267e2f56c14fbd78d28ae96a34ba3d.pdf",
+      "link_edital": "https://www.gov.br/pncp/pt-br/catalogo-eletronico-de-padronizacao",
+      "fonte": "QD",
+      "relevance_score": 7,
+      "categoria": "Marketing Digital",
+      "justificativa": "O catálogo eletrônico de padronização de logística pública sugere a necessidade de comunicação e divulgação estratégica para sua adoção e uso.",
       "tipo_aviso": "oportunidade"
     },
     {
