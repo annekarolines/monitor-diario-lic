@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-09-01T18:03:10.420536+00:00",
-  "total": 264,
+  "last_updated": "2026-09-02T18:07:02.670549+00:00",
+  "total": 266,
   "licitacoes": [
+    {
+      "id": "9b4fd8e9d761173cfed2ddeda4374c02",
+      "orgao": "Estado de São Paulo",
+      "ambito": "Federal",
+      "objeto": "Credenciamento de empresas para prestação de serviços de publicidade e divulgação de campanhas publicitárias e institucionais, com foco na veiculação de atos oficiais de caráter educativo, informativo e de orientação à população de Maracaí/SP e região.",
+      "modalidade": "Credenciamento",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-09-02",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/edital-processo-n-66/2026-credenciamento-006/2026-729504937",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O escopo de publicidade e divulgação de campanhas institucionais para um órgão estadual em uma região específica representa uma oportunidade clara para agências com expertise em comunicação pública.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "bf137d37dd36e38d7139f6c429b3132d",
+      "orgao": "Estado da Bahia",
+      "ambito": "Federal",
+      "objeto": "Contratação de agência de propaganda para prestação de serviços de publicidade institucional do Município de Capim Grosso.",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-09-02",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-homologacao-729564971",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "A licitação visa a contratação de agência de propaganda para comunicação institucional, um serviço central para o core business de agências de comunicação.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "d9f3e135ac64f29679284d57726367e8",
       "orgao": "Justiça Federal",
