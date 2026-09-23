@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-09-22T18:09:25.564108+00:00",
-  "total": 89,
+  "last_updated": "2026-09-23T18:28:58.088294+00:00",
+  "total": 90,
   "licitacoes": [
+    {
+      "id": "15d78f2c5e9f946a834afec170a4bb35",
+      "orgao": "Estado do Piauí",
+      "ambito": "Federal",
+      "objeto": "Registro de preços para contratação de empresa especializada na captação e produção de conteúdo audiovisual e gráfico, sob demanda, para ações institucionais.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-09-23",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-733557885",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Conteúdo & Redes Sociais",
+      "justificativa": "O escopo de produção de conteúdo audiovisual e gráfico sob demanda para ações institucionais é um serviço central para agências de comunicação com expertise em criação e distribuição.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "2b3241f9a5e92b8e420c7ba30c114afe",
+      "orgao": "Empresa Brasileira de Correios e Telégrafos",
+      "ambito": "Federal",
+      "objeto": "Dar publicidade a um acordo de cooperação entre os Correios e a Federação Brasileira de Filatelia (Febraf). O acordo não envolve ônus financeiro entre as partes.",
+      "modalidade": "Aviso",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-09-23",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-termo-de-acordo-de-cooperacao-733609135",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 5,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "A necessidade de dar publicidade a um acordo institucional, mesmo sem transferência de recursos, abre espaço para serviços de comunicação institucional e divulgação estratégica.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "a33eb423a0e0c5682a9bf4b6cb02a3e2",
       "orgao": "CONSELHO REGIONAL DE ENGENHARIA E AGRONOMIA DO ESTADO DO MARANHÃO",
@@ -1496,23 +1530,6 @@
       "relevance_score": 5,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "Embora o objeto seja uma baixa tributária, a natureza do cadastro envolve publicidade, indicando um histórico de contratação de serviços de comunicação pela empresa.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "a525a4702c2c9303f356d988a3bb9aec",
-      "orgao": "Taiobeiras",
-      "ambito": "Municipal – Taiobeiras/MG",
-      "objeto": "Formação em diversos eixos temáticos, incluindo 'Tecnologias e Mídias Sociais', 'Oratória e Comunicação'.",
-      "modalidade": "Aviso de Licitação",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-08-22",
-      "fonte_url": "https://data.queridodiario.ok.org.br/3168002/2026-08-22/48ecc4df076fda1e0b2772ece5dde2d431218bfc.pdf",
-      "link_edital": "https://www.taiobeiras.mg.gov.br/diario-oficial/847/",
-      "fonte": "QD",
-      "relevance_score": 6,
-      "categoria": "Conteúdo & Redes Sociais",
-      "justificativa": "A inclusão explícita de 'Tecnologias e Mídias Sociais' e 'Oratória e Comunicação' no conteúdo formativo indica uma necessidade de desenvolvimento de materiais e estratégias de comunicação.",
       "tipo_aviso": "oportunidade"
     }
   ]
