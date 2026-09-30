@@ -1,7 +1,24 @@
 {
-  "last_updated": "2026-09-29T19:22:58.095828+00:00",
-  "total": 54,
+  "last_updated": "2026-09-30T19:12:06.204038+00:00",
+  "total": 55,
   "licitacoes": [
+    {
+      "id": "ba11492e07a409cb1f8b1ff53e708b6c",
+      "orgao": "Estado de Minas Gerais",
+      "ambito": "Federal",
+      "objeto": "Contratação de empresa para serviços de comunicação institucional, publicidade, produção fotográfica e audiovisual, mídias digitais, criação de peças publicitárias e planejamento de campanhas.",
+      "modalidade": "Aviso de Dispensa de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-09-30",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-dispensa-n-43/2026-735638794",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O escopo abrange diversas frentes de comunicação e publicidade, indicando um contrato de médio a grande porte para o Estado de Minas Gerais.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "fe08bbdbd5abad4e11c32029241779ae",
       "orgao": "Conselho de Arquitetura e Urbanismo do Brasil",
