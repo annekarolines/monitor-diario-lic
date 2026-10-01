@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-09-30T19:12:06.204038+00:00",
-  "total": 55,
+  "last_updated": "2026-10-01T19:32:56.022264+00:00",
+  "total": 57,
   "licitacoes": [
+    {
+      "id": "a96c12c5b26a2afe5acc19f141d162f5",
+      "orgao": "Conselho Regional de Enfermagem de Minas Gerais",
+      "ambito": "Federal",
+      "objeto": "Contratação de serviços para produção de conteúdo audiovisual, incluindo cobertura, direção e edição de vídeos.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": "2026-10-20",
+      "data_publicacao": "2026-10-01",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-735937508",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Conteúdo & Redes Sociais",
+      "justificativa": "O escopo focado em produção audiovisual e edição de vídeos se alinha diretamente com as capacidades de agências de comunicação especializadas em conteúdo digital.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "e93f826023f9f5712070d1aa8d7561fb",
+      "orgao": "Estado do Piauí",
+      "ambito": "Federal",
+      "objeto": "Contratação de empresa para prestação de serviços fotográficos, videográficos, design gráfico de publicidade, pré-impressão, projeção e transmissão ao vivo de eventos para atender secretarias do Município de Pedro II - PI.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-01",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-735999262",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O escopo abrange múltiplas frentes criativas e de produção audiovisual, sendo uma oportunidade clara para agências com expertise em eventos e comunicação visual.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "ba11492e07a409cb1f8b1ff53e708b6c",
       "orgao": "Estado de Minas Gerais",
