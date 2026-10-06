@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-05T21:34:12.742265+00:00",
-  "total": 43,
+  "last_updated": "2026-10-06T19:33:25.608016+00:00",
+  "total": 45,
   "licitacoes": [
+    {
+      "id": "6ae7ef2ccb5ac2b3a340a52b6e8cfe51",
+      "orgao": "Conselho Regional De Enfermagem De Sao Paulo",
+      "ambito": "Federal",
+      "objeto": "Contratação de empresa especializada em serviços de publicidade, a serem prestados por intermédio de agência de propaganda para o Conselho Regional de Enfermagem de São Paulo.",
+      "modalidade": "Concorrência - Presencial",
+      "valor_estimado": 14000000.0,
+      "prazo_proposta": "2026-11-30",
+      "data_publicacao": "2026-10-06",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-736685498",
+      "link_edital": "https://pncp.gov.br/app/editais/44413680000140/2027/1",
+      "fonte": "DOU",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O valor estimado de R$ 14 milhões para serviços de publicidade representa uma oportunidade de grande porte para agências com expertise em campanhas institucionais e de alcance amplo.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "1591a02cde60cd3dd55c54c52387c12a",
+      "orgao": "Estado da Bahia",
+      "ambito": "Federal",
+      "objeto": "Prestação de serviços de publicidade, incluindo estudo, planejamento, criação, execução, intermediação e supervisão de campanhas publicitárias e sua distribuição.",
+      "modalidade": "Pregão Presencial",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-06",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-736738854",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O escopo detalhado abrange todas as etapas da cadeia de publicidade, configurando uma oportunidade robusta para agências com capacidade de gestão integrada.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "fd5610f9a0a601aadbcf8b7f2cb1541a",
       "orgao": "Conselho Regional De Enfermagem Do Rio Grande Do Sul",
