@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-06T19:33:25.608016+00:00",
-  "total": 45,
+  "last_updated": "2026-10-07T19:59:18.288233+00:00",
+  "total": 47,
   "licitacoes": [
+    {
+      "id": "229de2f2c578bf6267dad9d038f9089e",
+      "orgao": "Estado da Bahia",
+      "ambito": "Federal",
+      "objeto": "Prestação de serviços de publicidade, incluindo planejamento, criação, execução e supervisão de campanhas publicitárias.",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-07",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-737028741",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O objeto abrange todas as etapas da publicidade, indicando um contrato de grande porte e escopo amplo para o Estado da Bahia.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "2d3d6846a8e79e8773d6c5afd06ebc5b",
+      "orgao": "Estado de Goiás",
+      "ambito": "Federal",
+      "objeto": "Contratação de serviços de publicidade prestados por agência de propaganda, abrangendo o conjunto de atividades realizadas.",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-07",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-adiamento-737085423",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O objeto descreve explicitamente a contratação de serviços de publicidade por agência de propaganda, configurando uma oportunidade direta para agências especializadas.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "6ae7ef2ccb5ac2b3a340a52b6e8cfe51",
       "orgao": "Conselho Regional De Enfermagem De Sao Paulo",
