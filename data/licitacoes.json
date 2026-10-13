@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-12T22:10:26.161996+00:00",
-  "total": 37,
+  "last_updated": "2026-10-13T20:17:26.637007+00:00",
+  "total": 40,
   "licitacoes": [
+    {
+      "id": "9ecd948a55de5452c12474bafc703b9e",
+      "orgao": "Empresa Brasileira de Pesquisa Agropecuária",
+      "ambito": "Federal",
+      "objeto": "Inscrição de 5 funcionárias da Embrapa em curso online sobre criação publicitária com IA, focado em prompts, design systems e workflows.",
+      "modalidade": "Dispensa de Licitação",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-13",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/extrato-de-dispensa-de-licitacao-n-99-2026-uasg-135058-738006485",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 6,
+      "categoria": "Marketing Digital",
+      "justificativa": "Embora seja um curso, a temática de IA aplicada à criação publicitária demonstra um interesse estratégico da Embrapa em modernizar suas práticas de comunicação, abrindo portas para futuras demandas em marketing digital.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "53c98dd126becef28b5ec7ef4a81ad85",
+      "orgao": "Estado da Paraíba",
+      "ambito": "Federal",
+      "objeto": "Contratação de empresa para confecção de material de identidade visual e gráfico para o Município de Alcantil – PB.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-13",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/extrato-de-contrato-737858183",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 6,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "O escopo focado em identidade visual e material gráfico representa uma oportunidade direta para agências com expertise em design e branding.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "9ee16cf5a522cafba4623117b3eb166c",
       "orgao": "Secretaria Executiva",
@@ -119,6 +153,23 @@
       "relevance_score": 8,
       "categoria": "Publicidade & Propaganda",
       "justificativa": "O escopo detalhado abrange todas as etapas da cadeia de publicidade, configurando uma oportunidade robusta para agências com capacidade de gestão integrada.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "1dbb745f1dc5a5252d6e951659950fb5",
+      "orgao": "MUNICIPIO DE GUAPORE",
+      "ambito": "Municipal – Guaporé/RS",
+      "objeto": "Concessão onerosa de uso de espaços públicos para instalação e exploração de estruturas metálicas para publicidade institucional e/ou comercial do tipo outdoor.",
+      "modalidade": "Concorrência - Eletrônica",
+      "valor_estimado": 14400.0,
+      "prazo_proposta": "2026-11-17",
+      "data_publicacao": "2026-10-06",
+      "fonte_url": "https://pncp.gov.br/app/editais/87862397000109/2026/843",
+      "link_edital": null,
+      "fonte": "PNCP",
+      "relevance_score": 5,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "Embora o valor seja baixo, a natureza do objeto, focada em publicidade externa (outdoor), representa uma oportunidade para agências com expertise em mídia offline e gestão de campanhas publicitárias.",
       "tipo_aviso": "oportunidade"
     },
     {
