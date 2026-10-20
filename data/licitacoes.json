@@ -1,7 +1,24 @@
 {
-  "last_updated": "2026-10-19T19:54:01.256732+00:00",
-  "total": 36,
+  "last_updated": "2026-10-20T18:32:49.633039+00:00",
+  "total": 37,
   "licitacoes": [
+    {
+      "id": "90d3616cfa0a3c0661b7a04861044693",
+      "orgao": "Estado da Bahia",
+      "ambito": "Federal",
+      "objeto": "Contratação de empresa para consultoria e assessoria em comunicação governamental e institucional, incluindo planejamento estratégico, produção de conteúdos e gestão de canais oficiais e redes sociais.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-20",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-739220653",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "O escopo abrange comunicação institucional e digital, com foco em planejamento estratégico e gestão de redes sociais, alinhado aos serviços de uma agência de comunicação.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "050f6b9ed5543be7e63d7ee99560cea7",
       "orgao": "Autoridade Portuária de Santos S.A.",
