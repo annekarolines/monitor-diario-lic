@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-20T18:32:49.633039+00:00",
-  "total": 37,
+  "last_updated": "2026-10-21T18:39:06.092326+00:00",
+  "total": 39,
   "licitacoes": [
+    {
+      "id": "4080f38d781a4ef49b6a4097aa01953f",
+      "orgao": "Estado do Pará",
+      "ambito": "Federal",
+      "objeto": "Contratação de agência de propaganda para prestação de serviços de publicidade, compreendendo o conjunto de atividades realizadas integradamente.",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-21",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-739484226",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 8,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "O objeto é explicitamente a contratação de agência de propaganda, indicando um escopo direto para serviços de publicidade e comunicação.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "005e4fd614e289178508d5fb6f8332a0",
+      "orgao": "Estado de Goiás",
+      "ambito": "Federal",
+      "objeto": "Credenciamento de empresa para prestação de serviços ao Fundo Municipal de Saúde de Guarinós, homologado para a empresa CLINICA MED CENTER EIRELI-ME.",
+      "modalidade": "Chamamento Público",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-21",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-credenciamento-n-6/2026-739609014",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 5,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "Embora o objeto seja um credenciamento já homologado, a natureza do órgão (Fundo Municipal de Saúde) e a modalidade (Chamamento Público) podem indicar futuras necessidades de comunicação para a clínica credenciada.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "90d3616cfa0a3c0661b7a04861044693",
       "orgao": "Estado da Bahia",
