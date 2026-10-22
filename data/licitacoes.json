@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-21T18:39:06.092326+00:00",
+  "last_updated": "2026-10-22T18:35:00.331715+00:00",
   "total": 39,
   "licitacoes": [
+    {
+      "id": "8d0f902f3858f1ef3795f1b8c68a2bc8",
+      "orgao": "Estado do Pará",
+      "ambito": "Federal",
+      "objeto": "Contratação de agência(s) especializada(s) em serviços de publicidade para a Prefeitura Municipal de Altamira/PA.",
+      "modalidade": "Concorrência Eletrônica",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-22",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-739888188",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 7,
+      "categoria": "Publicidade & Propaganda",
+      "justificativa": "A licitação visa a contratação de agência(s) para serviços de publicidade, indicando um escopo direto para agências de comunicação.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "b36f10b6a24e0162dad01fcd5cb028a1",
+      "orgao": "Conselho Regional de Farmácia do Estado de Minas Gerais",
+      "ambito": "Federal",
+      "objeto": "Aquisição de pins e troféus institucionais personalizados com a identidade visual do Conselho Regional de Farmácia de Minas Gerais (CRF-MG).",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-22",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-739922634",
+      "link_edital": "https://crf-mg.implanta.net.br/portaltransparencia/#publico/inicio",
+      "fonte": "DOU",
+      "relevance_score": 5,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "A personalização de itens institucionais com a identidade visual do órgão é um serviço que pode ser explorado por agências com expertise em design e branding.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "4080f38d781a4ef49b6a4097aa01953f",
       "orgao": "Estado do Pará",
@@ -629,40 +663,6 @@
       "relevance_score": 5,
       "categoria": "Comunicação Institucional",
       "justificativa": "A necessidade de dar publicidade a um acordo institucional, mesmo sem transferência de recursos, abre espaço para serviços de comunicação institucional e divulgação estratégica.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "a33eb423a0e0c5682a9bf4b6cb02a3e2",
-      "orgao": "CONSELHO REGIONAL DE ENGENHARIA E AGRONOMIA DO ESTADO DO MARANHÃO",
-      "ambito": "Federal",
-      "objeto": "Contratação de empresa especializada para prestação de serviços de publicidade e propaganda para o Conselho Regional de Engenharia e Agronomia do Estado do Maranhão (CREA-MA).",
-      "modalidade": "Concorrência",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-09-21",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/extrato-de-contrato-733059938",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 7,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "O objeto descreve explicitamente a contratação de serviços de publicidade e propaganda, indicando uma oportunidade direta para agências com expertise neste segmento.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "874f5338e0647d9abbd5d3812bda7a25",
-      "orgao": "Conselho Regional de Medicina do Estado do Maranhão",
-      "ambito": "Federal",
-      "objeto": "Credenciamento de profissionais formados em comunicação, publicidade ou marketing para compor a Subcomissão Técnica que analisará e julgará licitações de publicidade, conforme Lei nº 12.232/2010.",
-      "modalidade": "Chamamento Público",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-09-21",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-chamamento-publico-n-32/2026-733200736",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 6,
-      "categoria": "Comunicação Institucional",
-      "justificativa": "O credenciamento de profissionais qualificados para análise técnica de licitações de publicidade indica um processo estruturado de contratação de serviços de comunicação pelo órgão.",
       "tipo_aviso": "oportunidade"
     }
   ]
