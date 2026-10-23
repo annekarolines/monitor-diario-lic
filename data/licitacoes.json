@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-10-22T18:35:00.331715+00:00",
-  "total": 39,
+  "last_updated": "2026-10-23T18:21:19.922783+00:00",
+  "total": 41,
   "licitacoes": [
+    {
+      "id": "1948f108351968c4315deabc680d4e13",
+      "orgao": "Justiça Federal",
+      "ambito": "Federal",
+      "objeto": "Contratação de serviços de engenharia para adequação do prédio da Subseção Judiciária de Três Lagoas/MS aos padrões de identidade visual da Justiça Federal.",
+      "modalidade": "Pregão Eletrônico",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-23",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-740161217",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 6,
+      "categoria": "Identidade Visual & Criação",
+      "justificativa": "A adequação à identidade visual da Justiça Federal representa uma oportunidade para agências com expertise em design e comunicação visual aplicada a espaços físicos.",
+      "tipo_aviso": "oportunidade"
+    },
+    {
+      "id": "96f29b9bb70b783404822a94d78a107c",
+      "orgao": "Conselho Regional de Engenharia e Agronomia do Rio Grande do Sul",
+      "ambito": "Federal",
+      "objeto": "Chamada pública para cadastro de profissionais das áreas de comunicação, publicidade ou marketing. O objetivo é formar uma subcomissão técnica para análise.",
+      "modalidade": "Aviso de Chamamento Público",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-10-23",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-chamada-publica-n-1/2026-740150656",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 6,
+      "categoria": "Comunicação Institucional",
+      "justificativa": "O CREA-RS busca ativamente profissionais de comunicação, indicando uma necessidade de serviços ou consultoria em suas áreas de atuação.",
+      "tipo_aviso": "oportunidade"
+    },
     {
       "id": "8d0f902f3858f1ef3795f1b8c68a2bc8",
       "orgao": "Estado do Pará",
