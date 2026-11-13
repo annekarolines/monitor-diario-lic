@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-12T22:58:35.710878+00:00",
-  "total": 18,
+  "last_updated": "2026-11-13T23:17:22.672691+00:00",
+  "total": 16,
   "licitacoes": [
     {
       "id": "13e9e7f8cac2bef9c0ef889eb9067ebe",
@@ -272,40 +272,6 @@
       "relevance_score": 7,
       "categoria": "Comunicação Institucional",
       "justificativa": "O Banco da Amazônia S.A., como instituição financeira de fomento, demanda serviços estratégicos de comunicação institucional para fortalecer sua imagem e relacionamento com stakeholders.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "9ecd948a55de5452c12474bafc703b9e",
-      "orgao": "Empresa Brasileira de Pesquisa Agropecuária",
-      "ambito": "Federal",
-      "objeto": "Inscrição de 5 funcionárias da Embrapa em curso online sobre criação publicitária com IA, focado em prompts, design systems e workflows.",
-      "modalidade": "Dispensa de Licitação",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-10-13",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/extrato-de-dispensa-de-licitacao-n-99-2026-uasg-135058-738006485",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 6,
-      "categoria": "Marketing Digital",
-      "justificativa": "Embora seja um curso, a temática de IA aplicada à criação publicitária demonstra um interesse estratégico da Embrapa em modernizar suas práticas de comunicação, abrindo portas para futuras demandas em marketing digital.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "53c98dd126becef28b5ec7ef4a81ad85",
-      "orgao": "Estado da Paraíba",
-      "ambito": "Federal",
-      "objeto": "Contratação de empresa para confecção de material de identidade visual e gráfico para o Município de Alcantil – PB.",
-      "modalidade": "Pregão Eletrônico",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-10-13",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/extrato-de-contrato-737858183",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 6,
-      "categoria": "Identidade Visual & Criação",
-      "justificativa": "O escopo focado em identidade visual e material gráfico representa uma oportunidade direta para agências com expertise em design e branding.",
       "tipo_aviso": "oportunidade"
     }
   ]
