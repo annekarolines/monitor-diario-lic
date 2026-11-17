@@ -1,7 +1,41 @@
 {
-  "last_updated": "2026-11-16T23:26:30.886655+00:00",
-  "total": 10,
+  "last_updated": "2026-11-17T22:19:31.049657+00:00",
+  "total": 12,
   "licitacoes": [
+    {
+      "id": "594fbb05a05a82d374135f497ee31a7f",
+      "orgao": "Secretaria Executiva",
+      "ambito": "Federal",
+      "objeto": "AVISO DE SUSPENSÃO CONCORRÊNCIA Nº 90001/2025 O Ministério do Trabalho e Emprego, por intermédio da Comissão Especial de Contratação, torna pública a suspensão administrativa da Concorrência nº 90001/",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": null,
+      "data_publicacao": "2026-11-17",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-suspensao-744930576",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 0,
+      "categoria": null,
+      "justificativa": "",
+      "tipo_aviso": "suspensão"
+    },
+    {
+      "id": "b6fb9b51115f6490463d7a9f77810818",
+      "orgao": "Secretaria Executiva",
+      "ambito": "Federal",
+      "objeto": "AVISO DE SUSPENSÃO CONCORRÊNCIA Nº 11/2026 Comunicamos a suspensão da licitação supracitada, processo 59000.004237/2025-79, publicada no D.O.U de 15/09/2026. Objeto: Contratação de empresa para presta",
+      "modalidade": "Concorrência",
+      "valor_estimado": null,
+      "prazo_proposta": "2025-11-12",
+      "data_publicacao": "2026-11-17",
+      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-suspensao-744868131",
+      "link_edital": null,
+      "fonte": "DOU",
+      "relevance_score": 0,
+      "categoria": null,
+      "justificativa": "",
+      "tipo_aviso": "suspensão"
+    },
     {
       "id": "13e9e7f8cac2bef9c0ef889eb9067ebe",
       "orgao": "Secretaria Executiva",
