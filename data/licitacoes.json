@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-18T21:54:53.679289+00:00",
-  "total": 12,
+  "last_updated": "2026-11-19T22:11:56.337560+00:00",
+  "total": 10,
   "licitacoes": [
     {
       "id": "594fbb05a05a82d374135f497ee31a7f",
@@ -170,40 +170,6 @@
       "relevance_score": 7,
       "categoria": "Comunicação Institucional",
       "justificativa": "O escopo abrange comunicação institucional e digital, com foco em planejamento estratégico e gestão de redes sociais, alinhado aos serviços de uma agência de comunicação.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "050f6b9ed5543be7e63d7ee99560cea7",
-      "orgao": "Autoridade Portuária de Santos S.A.",
-      "ambito": "Federal",
-      "objeto": "Contratação de agência de publicidade para prestação de serviços de comunicação, incluindo estudo, planejamento, conceituação e concepção de atividades.",
-      "modalidade": "Aviso de Licitação",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-10-19",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-738950846",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 8,
-      "categoria": "Publicidade & Propaganda",
-      "justificativa": "O objeto abrange a totalidade dos serviços de agência de propaganda, indicando um contrato de grande porte e escopo abrangente para a Autoridade Portuária de Santos.",
-      "tipo_aviso": "oportunidade"
-    },
-    {
-      "id": "9d487206754524821ad3cdc76d493b11",
-      "orgao": "Estado do Rio Grande do Sul",
-      "ambito": "Federal",
-      "objeto": "Contratação de empresa especializada para prestação de serviços integrados de comunicação institucional e divulgação para a VII Convenção Nativista.",
-      "modalidade": "Pregão Eletrônico",
-      "valor_estimado": null,
-      "prazo_proposta": "2026-11-05",
-      "data_publicacao": "2026-10-19",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-licitacao-739040992",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 7,
-      "categoria": "Comunicação Institucional",
-      "justificativa": "O escopo de comunicação institucional e divulgação para um evento específico como a Convenção Nativista representa uma oportunidade clara para agências com expertise em eventos e campanhas direcionadas.",
       "tipo_aviso": "oportunidade"
     }
   ]
