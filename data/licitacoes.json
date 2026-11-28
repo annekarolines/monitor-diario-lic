@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-11-26T23:49:56.983694+00:00",
-  "total": 3,
+  "last_updated": "2026-11-28T00:28:43.284061+00:00",
+  "total": 2,
   "licitacoes": [
     {
       "id": "594fbb05a05a82d374135f497ee31a7f",
@@ -29,23 +29,6 @@
       "prazo_proposta": "2025-11-12",
       "data_publicacao": "2026-11-17",
       "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-suspensao-744868131",
-      "link_edital": null,
-      "fonte": "DOU",
-      "relevance_score": 0,
-      "categoria": null,
-      "justificativa": "",
-      "tipo_aviso": "suspensão"
-    },
-    {
-      "id": "13e9e7f8cac2bef9c0ef889eb9067ebe",
-      "orgao": "Secretaria Executiva",
-      "ambito": "Federal",
-      "objeto": "AVISO DE SUSPENSÃO PREGÃO ELETRÔNICO Nº 810005-156/2026 Nº Processo: 00135.201231/2026-51. Objeto: Contratação de serviços contínuos de apoio técnico às atividades de comunicação, nas áreas de Jornali",
-      "modalidade": "Pregão Eletrônico",
-      "valor_estimado": null,
-      "prazo_proposta": null,
-      "data_publicacao": "2026-10-27",
-      "fonte_url": "https://www.in.gov.br/en/web/dou/-/aviso-de-suspensao-740548579",
       "link_edital": null,
       "fonte": "DOU",
       "relevance_score": 0,
